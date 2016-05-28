@@ -1,0 +1,6 @@
+
+cd pfile
+
+tolua++ -o ../hivenet.cpp hivenet.pfile
+
+cd ../

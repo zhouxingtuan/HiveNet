@@ -1,0 +1,10 @@
+cd lua
+
+bash toluacpp
+
+cd ../
+
+make clean
+
+make
+
