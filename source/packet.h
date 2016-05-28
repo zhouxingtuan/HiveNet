@@ -34,8 +34,26 @@ public:
 	inline void resetCursor(void){ m_cursor = 0; }
 	inline Buffer* getBuffer(void){ return m_pBuffer; }
 
-	int write(const void* ptr, int length);
-	int read(void* ptr, int length);
+	inline int write(const void* ptr, int length){
+		if( !isWriteEnable() ){
+    		return 0;
+    	}
+    	int n = m_pBuffer->write(ptr, length, getCursor());
+    	if( n > 0 ){
+    		moveCursor(n);
+    	}
+    	return n;
+	}
+	inline int read(void* ptr, int length){
+		if( !isReadEnable() ){
+			return false;
+		}
+		int n = m_pBuffer->read(ptr, length, getCursor());
+		if( n > 0 ){
+			moveCursor(n);
+		}
+		return n;
+	}
 	virtual inline std::string getClassName(void) const {
 		return "Packet";
 	}

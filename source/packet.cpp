@@ -24,25 +24,5 @@ Packet::~Packet(void){
 	SAFE_RELEASE(m_pBuffer)
 }
 
-int Packet::write(const void* ptr, int length){
-	if( !isWriteEnable() ){
-		return 0;
-	}
-	int n = m_pBuffer->write(ptr, length, getCursor());
-	if( n > 0 ){
-		moveCursor(n);
-	}
-	return n;
-}
-int Packet::read(void* ptr, int length){
-	if( !isReadEnable() ){
-		return false;
-	}
-	int n = m_pBuffer->read(ptr, length, getCursor());
-	if( n > 0 ){
-		moveCursor(n);
-	}
-	return n;
-}
 
 NS_HIVENET_END
