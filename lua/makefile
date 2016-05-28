@@ -16,6 +16,6 @@ OBJS = hivenet.o
 all: $(OBJS)
 
 $(OBJS): %.o:%.cpp
-	$(CC) -c $< -o $@ $(CFLAGS)
+	$(CC) -g -c $< -o $@ $(CFLAGS)
 
 hivenet.o:hivenet.cpp ../source/hivenet.h

@@ -33,5 +33,17 @@ USING_NS_HIVENET;
 int main(int argc, char *argv[])
 {
 	fprintf(stderr, "hello world!\n");
+	int value = 1000;
+	Packet* p = new Packet(120);
+	p->retain();
+	p->write(&value, sizeof(value));
+	p->resetCursor();
+	int value2 = 0;
+	p->read(&value2, sizeof(value2));
+	fprintf(stderr, "value is %d and after write read value2 is %d \n", value, value2);
+	fprintf(stderr, "p getRefCount %d\n", p->getRefCount());
+
+	p->release();
+
 	return 0;
 }

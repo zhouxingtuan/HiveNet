@@ -2,6 +2,10 @@ $#include "hivenet.h"
 
 $pfile "common.pfile"
 
+$pfile "buffer.pfile"
+
+$pfile "packet.pfile"
+
 
 
 

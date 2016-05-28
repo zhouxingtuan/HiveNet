@@ -10,7 +10,7 @@
 #define __hivenet__hivenet__
 
 #include "common.h"
-
-USING_NS_HIVENET;
+#include "buffer.h"
+#include "packet.h"
 
 #endif
