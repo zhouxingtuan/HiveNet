@@ -23,21 +23,21 @@ public:
 
 	inline int write(const void* ptr, int length, int offset){
 		int needSize = offset + length;
-    	if( (int)this->size() < needSize ){
-    		this->resize(needSize, 0);
-    	}
-    	char* writeTo = (char*)(this->data()) + offset;
-    	memcpy(writeTo, ptr, length);
-    	return length;
+		if( (int)this->size() < needSize ){
+			this->resize(needSize, 0);
+		}
+		char* writeTo = (char*)(this->data()) + offset;
+		memcpy(writeTo, ptr, length);
+		return length;
 	}
 	inline int read(void* ptr, int length, int offset){
 		int needSize = offset + length;
-    	if( (int)this->size() < needSize){
-    		return 0;
-    	}
-    	char* readFrom = (char*)(this->data()) + offset;
-    	memcpy(ptr, readFrom, length);
-    	return length;
+		if( (int)this->size() < needSize){
+			return 0;
+		}
+		char* readFrom = (char*)(this->data()) + offset;
+		memcpy(ptr, readFrom, length);
+		return length;
 	}
 	virtual inline std::string getClassName(void) const {
 		return "Buffer";

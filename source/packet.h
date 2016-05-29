@@ -36,13 +36,13 @@ public:
 
 	inline int write(const void* ptr, int length){
 		if( !isWriteEnable() ){
-    		return 0;
-    	}
-    	int n = m_pBuffer->write(ptr, length, getCursor());
-    	if( n > 0 ){
-    		moveCursor(n);
-    	}
-    	return n;
+			return 0;
+		}
+		int n = m_pBuffer->write(ptr, length, getCursor());
+		if( n > 0 ){
+			moveCursor(n);
+		}
+		return n;
 	}
 	inline int read(void* ptr, int length){
 		if( !isReadEnable() ){
