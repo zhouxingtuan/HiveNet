@@ -1,0 +1,7 @@
+
+1.运行环境为Linux
+
+2.需要自行编译/安装tolua++工具
+
+3.编译脚本为compile,执行命令 bash compile 进行编译
+
