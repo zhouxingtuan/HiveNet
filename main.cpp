@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
 
 	unsigned int hh = 1024;
 	UniqueHandle h = hh;
-	fprintf(stderr, "unsigned int hh is %d  UniqueHandle h is %d\n", hh, h.getHandle());
+	fprintf(stderr, "unsigned int hh is %d  UniqueHandle h is %d index %d version %d\n", hh, h.getHandle(), h.getIndex(), h.getVersion());
 
 	TaskQueue::getInstance()->createWorker(4);
 

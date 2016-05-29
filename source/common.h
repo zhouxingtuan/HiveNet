@@ -142,10 +142,12 @@ protected:
 // 唯一性控制结构
 typedef struct UniqueHandle{
 	union{
-		unsigned short index;
-		unsigned short version;
-	}unique;
-	unsigned int handle;
+		struct{
+			unsigned short index;
+			unsigned short version;
+		}unique;
+		unsigned int handle;
+	};
 public:
 	UniqueHandle(unsigned int h){ this->handle = h; }
 	UniqueHandle(void) : handle(0) {}
@@ -161,10 +163,12 @@ public:
 // 64位长度，唯一性控制结构
 typedef struct LongUniqueHandle{
 	union{
-		unsigned int index;
-		unsigned int version;
-	}unique;
-	unsigned long long handle;
+		struct{
+			unsigned int index;
+			unsigned int version;
+		}unique;
+		unsigned long long handle;
+	};
 public:
 	LongUniqueHandle(unsigned int h){ this->handle = h; }
 	LongUniqueHandle(void) : handle(0) {}
