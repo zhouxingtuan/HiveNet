@@ -32,23 +32,61 @@ void ScriptManager::destroyInstance(void){
 }
 //创建一个Script
 Script* ScriptManager::create(void){
-	int stateID;
-    Script* ret = new Script(NULL);
-    ret->retain();
-    ret->setMaster(m_pMaster);
+	unsigned int index;
+    Script* ret;
     lock();
-    stateID = m_scripts.size();
-    ret->setStateID(stateID);
-	m_scripts.push_back(ret);
+    if( !m_idleIndex.empty() ){
+    	index = m_idleIndex.back();
+    	m_idleIndex.pop_back();
+		ret = m_scripts[index];
+		if( NULL == ret ){
+			ret = new Script(NULL);
+			ret->retain();
+			ret->setMaster(m_pMaster);
+			ret->setIndex(index);
+			m_scripts[index] = ret;
+		}//else{
+//			ret->increaseVersion();	// 这里对这个对象进行了重复使用
+		//}
+    }else{
+    	index = m_scripts.size();
+    	ret = new Script(NULL);
+		ret->retain();
+		ret->setMaster(m_pMaster);
+		ret->setIndex(index);
+		m_scripts.push_back(ret);
+    }
     unlock();
 	return ret;
 }
-void ScriptManager::remove(int stateID){
+void ScriptManager::idle(unsigned int handle){
 	Script* ret = NULL;
+	UniqueHandle h(handle);
+	unsigned short index = h.getIndex();
+	lock();
+	if( index < m_scripts.size() ){
+		ret = m_scripts[index];
+		if( NULL != ret ){
+			ret->increaseVersion();	// 这里对这个对象进行了重复使用
+			m_idleIndex.push_back(index);
+		}
+    }
+	unlock();
+}
+void ScriptManager::idle(Script* pScript){
+	idle( pScript->getHandle() );
+}
+void ScriptManager::remove(unsigned int handle){
+	Script* ret = NULL;
+	UniqueHandle h(handle);
+	unsigned short index = h.getIndex();
     lock();
-    if( stateID < (int)m_scripts.size() ){
-		ret = m_scripts[stateID];
-		m_scripts[stateID] = NULL;
+    if( index < m_scripts.size() ){
+		ret = m_scripts[index];
+		m_scripts[index] = NULL;
+		if( NULL != ret ){
+			m_idleIndex.push_back(index);
+		}
     }
 	unlock();
 	if( NULL != ret ){
@@ -56,13 +94,15 @@ void ScriptManager::remove(int stateID){
 	}
 }
 void ScriptManager::remove(Script* script){
-    remove( script->getStateID() );
+    remove( script->getHandle() );
 }
-Script* ScriptManager::getScript(int stateID){
+Script* ScriptManager::getScript(unsigned int handle){
     Script* ret = NULL;
+    UniqueHandle h(handle);
+	unsigned short index = h.getIndex();
 	lock();
-	if( stateID < (int)m_scripts.size() ){
-		ret = m_scripts[stateID];
+	if( index < m_scripts.size() ){
+		ret = m_scripts[index];
 	}
 	unlock();
 	return ret;

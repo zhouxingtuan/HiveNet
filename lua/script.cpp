@@ -11,7 +11,7 @@
 
 NS_HIVENET_BEGIN
 
-Script::Script(lua_State* pState) : HandlerInterface(), m_pState(NULL), m_pMaster(NULL), m_stateID(0){
+Script::Script(lua_State* pState) : HandlerInterface(), m_pState(NULL), m_pMaster(NULL){
 	if(pState==NULL){
 		m_pState = luaL_newstate();
 		lua_pop( m_pState, luaopen_base( m_pState ) );

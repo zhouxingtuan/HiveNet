@@ -40,7 +40,10 @@ public:
     inline void setInitString(const char* initFile){ m_initString = initFile; }
     inline const std::string& getInitString(void) const { return m_initString; }
 	inline lua_State * getState( void ) { return m_pState; }
-	inline int getStateID(void) const { return m_stateID; }
+	inline UniqueHandle getUniqueHandle(void) const { return m_uniqueHandle; }
+	inline unsigned short getIndex(void) const { return m_uniqueHandle.getIndex(); }
+	inline unsigned short getVersion(void) const { return m_uniqueHandle.getVersion(); }
+	inline unsigned int getHandle(void) const { return m_uniqueHandle.getHandle(); }
 	inline bool executeFile( const char * script_file_path ){
 		if( luaL_loadfile(m_pState, script_file_path ) == 0 ){
 			if( lua_resume( m_pState, 0 ) == 0 ){
@@ -80,7 +83,9 @@ public:
         return "Script";
     }
 protected:
-	inline void setStateID(int stateID){ m_stateID = stateID; }
+	// 保护函数，被ScriptManager调用
+	inline void increaseVersion(void){ m_uniqueHandle.increase(); }
+	inline void setIndex(unsigned short index){ m_uniqueHandle.setIndex(index); }
 	inline void setMaster(Script* pMaster){
 		SAFE_RELEASE(m_pMaster)
 		m_pMaster = pMaster;
@@ -95,7 +100,7 @@ protected:
 protected:
 	lua_State* m_pState;
     Script* m_pMaster;
-    int m_stateID;
+    UniqueHandle m_uniqueHandle;
     std::string m_initString;
 };//end class Script
 

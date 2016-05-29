@@ -52,6 +52,13 @@ int main(int argc, char *argv[])
 	pScript->onHandleMessage(p);
 	pScript->onUpdate();
 	pScript->onDestroy();
+	ScriptManager::getInstance()->idle(pScript);
+	pScript = ScriptManager::getInstance()->create();
+	pScript->setInitString("print('Hello World From Lua the second time') require('test')");
+	pScript->onInitialize();
+	pScript->onHandleMessage(p);
+	pScript->onUpdate();
+	pScript->onDestroy();
 	ScriptManager::destroyInstance();
 
 	p->release();
