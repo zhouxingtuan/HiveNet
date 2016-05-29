@@ -12,5 +12,6 @@
 #include "common.h"
 #include "buffer.h"
 #include "packet.h"
+#include "handlerinterface.h"
 
 #endif

@@ -1,0 +1,8 @@
+
+class Script : public HandlerInterface
+{
+    virtual inline std::string getClassName(void) const {
+        return "Script";
+    }
+};
+

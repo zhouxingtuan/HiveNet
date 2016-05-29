@@ -10,7 +10,7 @@
 
 NS_HIVENET_BEGIN
 
-Buffer::Buffer(void) : RefObject(), VectorChar() {
+Buffer::Buffer(void) : RefObject(), CharVector() {
 
 }
 Buffer::~Buffer(void){

@@ -10,6 +10,8 @@ LUASOCKET_INC := ./lua/luasocket/src/
 
 TOLUA_INC := ./lua/tolua/
 
+LUA_SCRIPT_INC := ./lua
+
 HIVENET_STATICLIB := $(JEMALLOC_STATICLIB) $(LUAJIT_STATICLIB) $(LUASOCKET_STATICLIB)
 
 OPENSSL_LIB := /usr/local/ssl/lib
@@ -21,7 +23,7 @@ HIVENET_INC := ./source
 LIBPATH = -L/usr/local/lib -L$(OPENSSL_LIB)
 LIBS = -levent -lssl -lcrypto
 
-INCLUDES = -I$(LUAJIT_INC) -I$(TOLUA_INC) -I$(OPENSSL_INC) -I$(LUASOCKET_INC) -I$(HIVENET_INC) -I$(JEMALLOC_INC)
+INCLUDES = -I$(LUAJIT_INC) -I$(TOLUA_INC) -I$(OPENSSL_INC) -I$(LUASOCKET_INC) -I$(LUA_SCRIPT_INC) -I$(HIVENET_INC) -I$(JEMALLOC_INC)
 
 # 注意，这里的 -ldl 需要放在flag的最后才能生效
 CFLAGS = -O2 -Wall -pthread -lrt $(INCLUDES) -lstdc++ -std=c++11 $(HIVENET_STATICLIB) $(LIBPATH) $(LIBS) -ldl

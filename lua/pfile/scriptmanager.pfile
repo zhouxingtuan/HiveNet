@@ -1,0 +1,17 @@
+
+
+class ScriptManager : public RefObject, public Sync
+{
+	static ScriptManager* getInstance(void);
+	static ScriptManager* createInstance(void);
+	static void destroyInstance(void);
+
+	Script* create(void);
+	void remove(int stateID);
+	void remove(Script* pScript);
+	Script* getScript(int stateID);
+	Script* getMaster(){ return m_pMaster; }
+	virtual inline std::string getClassName(void) const {
+		return "ScriptManager";
+	}
+};

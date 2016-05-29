@@ -1,0 +1,6 @@
+
+
+class HandlerInterface : public RefObject
+{
+
+};// end class HandlerInterface

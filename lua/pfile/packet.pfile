@@ -1,5 +1,7 @@
 
 class Packet : public RefObject
 {
-
+	virtual inline std::string getClassName(void) const {
+		return "Packet";
+	}
 };

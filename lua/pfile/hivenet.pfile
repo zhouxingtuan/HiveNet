@@ -1,10 +1,19 @@
 $#include "hivenet.h"
+$#include "script.h"
+$#include "scriptmanager.h"
+$#include "manual.hpp"
 
 $pfile "common.pfile"
 
 $pfile "buffer.pfile"
 
 $pfile "packet.pfile"
+
+$pfile "handlerinterface.pfile"
+
+$pfile "script.pfile"
+
+$pfile "scriptmanager.pfile"
 
 
 

@@ -13,9 +13,9 @@
 
 NS_HIVENET_BEGIN
 
-typedef std::vector<char> VectorChar;
+typedef std::vector<char> CharVector;
 
-class Buffer : public RefObject, public VectorChar
+class Buffer : public RefObject, public CharVector
 {
 public:
 	Buffer(void);
