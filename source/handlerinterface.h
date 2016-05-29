@@ -23,6 +23,10 @@ public:
 	virtual void onHandleMessage(Packet* pPacket) = 0;
 	virtual void onUpdate(void) = 0;
 	virtual void onDestroy(void) = 0;
+
+    virtual inline std::string getClassName(void) const {
+        return "HandlerInterface";
+    }
 protected:
 
 };// end class HandlerInterface

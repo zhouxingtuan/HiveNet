@@ -1,0 +1,10 @@
+
+class TaskQueue : public RefObject, public Sync
+{
+	static TaskQueue* getInstance(void);
+	static TaskQueue* createInstance(void);
+	static void destroyInstance(void);
+
+	void createWorker(int workerNumber);
+	void acceptTask(TaskInterface* pTask);
+};// end class TaskQueue

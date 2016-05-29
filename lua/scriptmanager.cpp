@@ -45,9 +45,7 @@ Script* ScriptManager::create(void){
 			ret->setMaster(m_pMaster);
 			ret->setIndex(index);
 			m_scripts[index] = ret;
-		}//else{
-//			ret->increaseVersion();	// 这里对这个对象进行了重复使用
-		//}
+		}
     }else{
     	index = m_scripts.size();
     	ret = new Script(NULL);
@@ -61,7 +59,7 @@ Script* ScriptManager::create(void){
 }
 void ScriptManager::idle(unsigned int handle){
 	Script* ret = NULL;
-	UniqueHandle h(handle);
+	UniqueHandle h = handle;
 	unsigned short index = h.getIndex();
 	lock();
 	if( index < m_scripts.size() ){
@@ -78,7 +76,7 @@ void ScriptManager::idle(Script* pScript){
 }
 void ScriptManager::remove(unsigned int handle){
 	Script* ret = NULL;
-	UniqueHandle h(handle);
+	UniqueHandle h = handle;
 	unsigned short index = h.getIndex();
     lock();
     if( index < m_scripts.size() ){
@@ -98,7 +96,7 @@ void ScriptManager::remove(Script* script){
 }
 Script* ScriptManager::getScript(unsigned int handle){
     Script* ret = NULL;
-    UniqueHandle h(handle);
+    UniqueHandle h = handle;
 	unsigned short index = h.getIndex();
 	lock();
 	if( index < m_scripts.size() ){

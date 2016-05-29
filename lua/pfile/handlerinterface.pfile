@@ -2,5 +2,7 @@
 
 class HandlerInterface : public RefObject
 {
-
+    virtual inline std::string getClassName(void) const {
+        return "HandlerInterface";
+    }
 };// end class HandlerInterface

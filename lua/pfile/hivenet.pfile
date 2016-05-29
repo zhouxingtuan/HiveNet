@@ -11,6 +11,14 @@ $pfile "packet.pfile"
 
 $pfile "handlerinterface.pfile"
 
+$pfile "taskinterface.pfile"
+
+$pfile "worker.pfile"
+
+$pfile "taskqueue.pfile"
+
+
+
 $pfile "script.pfile"
 
 $pfile "scriptmanager.pfile"

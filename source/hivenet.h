@@ -13,5 +13,9 @@
 #include "buffer.h"
 #include "packet.h"
 #include "handlerinterface.h"
+#include "taskinterface.h"
+#include "worker.h"
+#include "taskqueue.h"
+#include "taskupdate.h"
 
 #endif

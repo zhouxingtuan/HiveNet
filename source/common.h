@@ -128,12 +128,11 @@ public:
 	Thread(void) : m_pThread(0){}
 	virtual ~Thread(void){}
 	bool startThread(void);
+	void cancelThread(void);
 	virtual int threadFunction(void) = 0;
 	virtual inline std::string getClassName(void) const {
 		return "Thread";
 	}
-protected:
-	void cancelThread(void);
 private:
 	static void* staticThreadFunction(void* pData);
 protected:
@@ -147,16 +146,16 @@ typedef struct UniqueHandle{
 		unsigned short version;
 	}unique;
 	unsigned int handle;
-
+public:
 	UniqueHandle(unsigned int h){ this->handle = h; }
 	UniqueHandle(void) : handle(0) {}
 	virtual ~UniqueHandle(void){}
 	inline void increase(void){ ++this->unique.version; }
-	inline unsigned short setIndex(unsigned short index){ this->unique.index = index; }
+	inline void setIndex(unsigned short index){ this->unique.index = index; }
 	inline unsigned short getIndex(void) const { return this->unique.index; }
 	inline unsigned short getVersion(void) const { return this->unique.version; }
 	inline unsigned int getHandle(void) const { return this->handle; }
-	inline void operator=(unsigned int h){ this->handle = h; }
+	inline UniqueHandle& operator=(unsigned int h){ this->handle = h; return *this; }
 } UniqueHandle;
 
 // 64位长度，唯一性控制结构
@@ -166,16 +165,16 @@ typedef struct LongUniqueHandle{
 		unsigned int version;
 	}unique;
 	unsigned long long handle;
-
+public:
 	LongUniqueHandle(unsigned int h){ this->handle = h; }
 	LongUniqueHandle(void) : handle(0) {}
 	virtual ~LongUniqueHandle(void){}
 	inline void increase(void){ ++this->unique.version; }
-	inline unsigned int setIndex(unsigned int index){ this->unique.index = index; }
+	inline void setIndex(unsigned int index){ this->unique.index = index; }
 	inline unsigned int getIndex(void) const { return this->unique.index; }
 	inline unsigned int getVersion(void) const { return this->unique.version; }
 	inline unsigned long long getHandle(void) const { return this->handle; }
-	inline void operator=(unsigned long long h){ this->handle = h; }
+	inline LongUniqueHandle& operator=(unsigned long long h){ this->handle = h; return *this; }
 } LongUniqueHandle;
 
 

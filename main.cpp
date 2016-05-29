@@ -34,7 +34,9 @@ USING_NS_HIVENET;
 int main(int argc, char *argv[])
 {
 	fprintf(stderr, "hello world!\n");
+	// 单例创建
 	ScriptManager::createInstance();
+	TaskQueue::createInstance();
 
 	int value = 1000;
 	Packet* p = new Packet(120);
@@ -45,6 +47,12 @@ int main(int argc, char *argv[])
 	p->read(&value2, sizeof(value2));
 	fprintf(stderr, "value is %d and after write read value2 is %d \n", value, value2);
 	fprintf(stderr, "p getRefCount %d\n", p->getRefCount());
+
+	unsigned int hh = 1024;
+	UniqueHandle h = hh;
+	fprintf(stderr, "unsigned int hh is %d  UniqueHandle h is %d\n", hh, h.getHandle());
+
+	TaskQueue::getInstance()->createWorker(4);
 
 	Script* pScript = ScriptManager::getInstance()->create();
 	pScript->setInitString("print('Hello World From Lua') require('test')");
@@ -59,6 +67,14 @@ int main(int argc, char *argv[])
 	pScript->onHandleMessage(p);
 	pScript->onUpdate();
 	pScript->onDestroy();
+
+	TaskUpdate* pUpdate = new TaskUpdate(pScript);
+	pUpdate->retain();
+	TaskQueue::getInstance()->acceptTask(pUpdate);
+	pUpdate->release();
+
+	sleep(5);
+	TaskQueue::destroyInstance();
 	ScriptManager::destroyInstance();
 
 	p->release();
