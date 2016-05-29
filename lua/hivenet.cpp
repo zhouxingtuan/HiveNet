@@ -1,6 +1,6 @@
 /*
 ** Lua binding: hivenet
-** Generated automatically by tolua++-1.0.92 on Sun May 29 22:51:49 2016.
+** Generated automatically by tolua++-1.0.92 on Sun May 29 23:09:27 2016.
 */
 
 #ifndef __cplusplus
@@ -650,6 +650,38 @@ static int tolua_hivenet_TaskQueue_acceptTask00(lua_State* tolua_S)
 }
 #endif //#ifndef TOLUA_DISABLE
 
+/* method: getClassName of class  TaskQueue */
+#ifndef TOLUA_DISABLE_tolua_hivenet_TaskQueue_getClassName00
+static int tolua_hivenet_TaskQueue_getClassName00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"const TaskQueue",0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  const TaskQueue* self = (const TaskQueue*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'getClassName'", NULL);
+#endif
+  {
+   std::string tolua_ret = (std::string)  self->getClassName();
+   tolua_pushcppstring(tolua_S,(const char*)tolua_ret);
+  }
+ }
+ return 1;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'getClassName'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
 /* get function: __Sync__ of class  TaskQueue */
 #ifndef TOLUA_DISABLE_tolua_get_TaskQueue___Sync__
 static int tolua_get_TaskQueue___Sync__(lua_State* tolua_S)
@@ -1049,6 +1081,7 @@ TOLUA_API int tolua_hivenet_open (lua_State* tolua_S)
    tolua_function(tolua_S,"destroyInstance",tolua_hivenet_TaskQueue_destroyInstance00);
    tolua_function(tolua_S,"createWorker",tolua_hivenet_TaskQueue_createWorker00);
    tolua_function(tolua_S,"acceptTask",tolua_hivenet_TaskQueue_acceptTask00);
+   tolua_function(tolua_S,"getClassName",tolua_hivenet_TaskQueue_getClassName00);
    tolua_variable(tolua_S,"__Sync__",tolua_get_TaskQueue___Sync__,NULL);
   tolua_endmodule(tolua_S);
   tolua_cclass(tolua_S,"Script","Script","HandlerInterface",NULL);
