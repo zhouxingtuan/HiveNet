@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
 	TaskQueue::getInstance()->acceptTask(pUpdate);
 	pUpdate->release();
 
-	sleep(5);
+	sleep(3);
 	TaskQueue::destroyInstance();
 	ScriptManager::destroyInstance();
 

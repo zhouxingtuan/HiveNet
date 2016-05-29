@@ -36,6 +36,9 @@ public:
 	inline void wait(void){
 		pthread_cond_wait(&m_cond, &m_mutex);
 	}
+    virtual inline std::string getClassName(void) const {
+        return "TaskQueue";
+    }
 protected:
 	pthread_cond_t m_cond;
 	TaskInterfaceQueue m_queue;

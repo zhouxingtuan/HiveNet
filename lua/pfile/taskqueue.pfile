@@ -7,4 +7,7 @@ class TaskQueue : public RefObject, public Sync
 
 	void createWorker(int workerNumber);
 	void acceptTask(TaskInterface* pTask);
+    virtual inline std::string getClassName(void) const {
+        return "TaskQueue";
+    }
 };// end class TaskQueue
