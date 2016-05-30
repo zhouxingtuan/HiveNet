@@ -13,19 +13,23 @@
 
 NS_HIVENET_BEGIN
 
+class HandlerInterface;
+
 class TaskInterface : public RefObject
 {
 public:
-	TaskInterface(void) : RefObject(){}
-	virtual ~TaskInterface(void){}
+	explicit TaskInterface(HandlerInterface* pHandler);
+	virtual ~TaskInterface(void);
 
-	virtual void doTask(void) = 0;
+	virtual void commitTask(void);		// 提交任务到流水线中
+	virtual void doTask(void) = 0;		// 执行任务内容
 
+	inline HandlerInterface* getHandler(void){ return m_pHandler; }
     virtual inline std::string getClassName(void) const {
         return "TaskInterface";
     }
 protected:
-
+	HandlerInterface* m_pHandler;
 };// end class HandlerInterface
 
 NS_HIVENET_END

@@ -7,28 +7,28 @@
 //
 
 #include "worker.h"
-#include "taskqueue.h"
+#include "handlerqueue.h"
 
 NS_HIVENET_BEGIN
 
-Worker::Worker(TaskQueue* pTaskQueue) : RefObject(), Thread(), m_pTaskQueue(pTaskQueue) {
+Worker::Worker(HandlerQueue* pHandlerQueue) : RefObject(), Thread(), m_pHandlerQueue(pHandlerQueue) {
 
 }
 Worker::~Worker(void){
 
 }
 int Worker::threadFunction(void){
-	TaskInterface* pTask;
+	HandlerInterface* pHandler;
 	while(true){
-		m_pTaskQueue->lock();
-		pTask = m_pTaskQueue->nextTask();		// 临界区
-		while(NULL == pTask){
-			m_pTaskQueue->wait();
-			pTask = m_pTaskQueue->nextTask();	// 临界区: task在进入队列的时候已经retain过了，所以这里直接使用
+		m_pHandlerQueue->lock();
+		pHandler = m_pHandlerQueue->nextHandler();		// 临界区
+		while(NULL == pHandler){
+			m_pHandlerQueue->wait();
+			pHandler = m_pHandlerQueue->nextHandler();	// 临界区: Handler在进入队列的时候已经retain过了，所以这里直接使用
 		};
-		m_pTaskQueue->unlock();
-		pTask->doTask();	// 执行任务内容
-		pTask->release();	// 执行完之后释放掉
+		m_pHandlerQueue->unlock();
+		pHandler->doHandler();	// 执行任务内容
+		pHandler->release();	// 执行完之后释放掉
 	};
 	return 0;
 }

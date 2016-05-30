@@ -1,9 +1,0 @@
-
-
-class TaskInterface : public RefObject
-{
-    virtual inline std::string getClassName(void) const {
-        return "TaskInterface";
-    }
-};
-

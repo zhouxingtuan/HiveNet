@@ -9,16 +9,16 @@
 #ifndef __hivenet__worker__
 #define __hivenet__worker__
 
-#include "taskinterface.h"
+#include "handlerinterface.h"
 
 NS_HIVENET_BEGIN
 
-class TaskQueue;
+class HandlerQueue;
 
 class Worker : public RefObject, public Thread
 {
 public:
-	explicit Worker(TaskQueue* pTaskQueue);
+	explicit Worker(HandlerQueue* pHandlerQueue);
     virtual ~Worker(void);
     virtual int threadFunction(void);
 
@@ -26,7 +26,7 @@ public:
         return "Worker";
     }
 protected:
-	TaskQueue* m_pTaskQueue;
+	HandlerQueue* m_pHandlerQueue;
 };// end class Worker
 
 NS_HIVENET_END

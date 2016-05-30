@@ -1,0 +1,10 @@
+
+class HandlerQueue : public RefObject, public Sync
+{
+	static HandlerQueue* getInstance(void);
+	static HandlerQueue* createInstance(void);
+	static void destroyInstance(void);
+
+	void createWorker(int workerNumber);
+
+};
