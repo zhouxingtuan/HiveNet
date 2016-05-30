@@ -1,6 +1,6 @@
 /*
 ** Lua binding: hivenet
-** Generated automatically by tolua++-1.0.92 on Sun May 29 23:09:27 2016.
+** Generated automatically by tolua++-1.0.92 on Mon May 30 23:02:16 2016.
 */
 
 #ifndef __cplusplus
@@ -22,14 +22,12 @@ TOLUA_API int  tolua_hivenet_open (lua_State* tolua_S);
 static void tolua_reg_types (lua_State* tolua_S)
 {
  tolua_usertype(tolua_S,"Buffer");
- tolua_usertype(tolua_S,"Script");
+ tolua_usertype(tolua_S,"HandlerQueue");
  tolua_usertype(tolua_S,"Packet");
- tolua_usertype(tolua_S,"TaskQueue");
  tolua_usertype(tolua_S,"RefObject");
  tolua_usertype(tolua_S,"ScriptManager");
- tolua_usertype(tolua_S,"Worker");
  tolua_usertype(tolua_S,"Sync");
- tolua_usertype(tolua_S,"TaskInterface");
+ tolua_usertype(tolua_S,"Script");
  tolua_usertype(tolua_S,"Thread");
  tolua_usertype(tolua_S,"UniqueHandle");
  tolua_usertype(tolua_S,"HandlerInterface");
@@ -420,95 +418,31 @@ static int tolua_hivenet_HandlerInterface_getClassName00(lua_State* tolua_S)
 }
 #endif //#ifndef TOLUA_DISABLE
 
-/* method: getClassName of class  TaskInterface */
-#ifndef TOLUA_DISABLE_tolua_hivenet_TaskInterface_getClassName00
-static int tolua_hivenet_TaskInterface_getClassName00(lua_State* tolua_S)
+/* get function: __Sync__ of class  HandlerInterface */
+#ifndef TOLUA_DISABLE_tolua_get_HandlerInterface___Sync__
+static int tolua_get_HandlerInterface___Sync__(lua_State* tolua_S)
 {
+  HandlerInterface* self = (HandlerInterface*)  tolua_tousertype(tolua_S,1,0);
 #ifndef TOLUA_RELEASE
- tolua_Error tolua_err;
- if (
-     !tolua_isusertype(tolua_S,1,"const TaskInterface",0,&tolua_err) ||
-     !tolua_isnoobj(tolua_S,2,&tolua_err)
- )
-  goto tolua_lerror;
- else
-#endif
- {
-  const TaskInterface* self = (const TaskInterface*)  tolua_tousertype(tolua_S,1,0);
-#ifndef TOLUA_RELEASE
-  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'getClassName'", NULL);
-#endif
-  {
-   std::string tolua_ret = (std::string)  self->getClassName();
-   tolua_pushcppstring(tolua_S,(const char*)tolua_ret);
-  }
- }
- return 1;
-#ifndef TOLUA_RELEASE
- tolua_lerror:
- tolua_error(tolua_S,"#ferror in function 'getClassName'.",&tolua_err);
- return 0;
-#endif
-}
-#endif //#ifndef TOLUA_DISABLE
-
-/* method: getClassName of class  Worker */
-#ifndef TOLUA_DISABLE_tolua_hivenet_Worker_getClassName00
-static int tolua_hivenet_Worker_getClassName00(lua_State* tolua_S)
-{
-#ifndef TOLUA_RELEASE
- tolua_Error tolua_err;
- if (
-     !tolua_isusertype(tolua_S,1,"const Worker",0,&tolua_err) ||
-     !tolua_isnoobj(tolua_S,2,&tolua_err)
- )
-  goto tolua_lerror;
- else
-#endif
- {
-  const Worker* self = (const Worker*)  tolua_tousertype(tolua_S,1,0);
-#ifndef TOLUA_RELEASE
-  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'getClassName'", NULL);
-#endif
-  {
-   std::string tolua_ret = (std::string)  self->getClassName();
-   tolua_pushcppstring(tolua_S,(const char*)tolua_ret);
-  }
- }
- return 1;
-#ifndef TOLUA_RELEASE
- tolua_lerror:
- tolua_error(tolua_S,"#ferror in function 'getClassName'.",&tolua_err);
- return 0;
-#endif
-}
-#endif //#ifndef TOLUA_DISABLE
-
-/* get function: __Thread__ of class  Worker */
-#ifndef TOLUA_DISABLE_tolua_get_Worker___Thread__
-static int tolua_get_Worker___Thread__(lua_State* tolua_S)
-{
-  Worker* self = (Worker*)  tolua_tousertype(tolua_S,1,0);
-#ifndef TOLUA_RELEASE
-  if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable '__Thread__'",NULL);
+  if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable '__Sync__'",NULL);
 #endif
 #ifdef __cplusplus
-   tolua_pushusertype(tolua_S,(void*)static_cast<Thread*>(self), "Thread");
+   tolua_pushusertype(tolua_S,(void*)static_cast<Sync*>(self), "Sync");
 #else
-   tolua_pushusertype(tolua_S,(void*)((Thread*)self), "Thread");
+   tolua_pushusertype(tolua_S,(void*)((Sync*)self), "Sync");
 #endif
  return 1;
 }
 #endif //#ifndef TOLUA_DISABLE
 
-/* method: getInstance of class  TaskQueue */
-#ifndef TOLUA_DISABLE_tolua_hivenet_TaskQueue_getInstance00
-static int tolua_hivenet_TaskQueue_getInstance00(lua_State* tolua_S)
+/* method: getInstance of class  HandlerQueue */
+#ifndef TOLUA_DISABLE_tolua_hivenet_HandlerQueue_getInstance00
+static int tolua_hivenet_HandlerQueue_getInstance00(lua_State* tolua_S)
 {
 #ifndef TOLUA_RELEASE
  tolua_Error tolua_err;
  if (
-     !tolua_isusertable(tolua_S,1,"TaskQueue",0,&tolua_err) ||
+     !tolua_isusertable(tolua_S,1,"HandlerQueue",0,&tolua_err) ||
      !tolua_isnoobj(tolua_S,2,&tolua_err)
  )
   goto tolua_lerror;
@@ -516,8 +450,8 @@ static int tolua_hivenet_TaskQueue_getInstance00(lua_State* tolua_S)
 #endif
  {
   {
-   TaskQueue* tolua_ret = (TaskQueue*)  TaskQueue::getInstance();
-    tolua_pushusertype(tolua_S,(void*)tolua_ret,"TaskQueue");
+   HandlerQueue* tolua_ret = (HandlerQueue*)  HandlerQueue::getInstance();
+    tolua_pushusertype(tolua_S,(void*)tolua_ret,"HandlerQueue");
   }
  }
  return 1;
@@ -529,14 +463,14 @@ static int tolua_hivenet_TaskQueue_getInstance00(lua_State* tolua_S)
 }
 #endif //#ifndef TOLUA_DISABLE
 
-/* method: createInstance of class  TaskQueue */
-#ifndef TOLUA_DISABLE_tolua_hivenet_TaskQueue_createInstance00
-static int tolua_hivenet_TaskQueue_createInstance00(lua_State* tolua_S)
+/* method: createInstance of class  HandlerQueue */
+#ifndef TOLUA_DISABLE_tolua_hivenet_HandlerQueue_createInstance00
+static int tolua_hivenet_HandlerQueue_createInstance00(lua_State* tolua_S)
 {
 #ifndef TOLUA_RELEASE
  tolua_Error tolua_err;
  if (
-     !tolua_isusertable(tolua_S,1,"TaskQueue",0,&tolua_err) ||
+     !tolua_isusertable(tolua_S,1,"HandlerQueue",0,&tolua_err) ||
      !tolua_isnoobj(tolua_S,2,&tolua_err)
  )
   goto tolua_lerror;
@@ -544,8 +478,8 @@ static int tolua_hivenet_TaskQueue_createInstance00(lua_State* tolua_S)
 #endif
  {
   {
-   TaskQueue* tolua_ret = (TaskQueue*)  TaskQueue::createInstance();
-    tolua_pushusertype(tolua_S,(void*)tolua_ret,"TaskQueue");
+   HandlerQueue* tolua_ret = (HandlerQueue*)  HandlerQueue::createInstance();
+    tolua_pushusertype(tolua_S,(void*)tolua_ret,"HandlerQueue");
   }
  }
  return 1;
@@ -557,14 +491,14 @@ static int tolua_hivenet_TaskQueue_createInstance00(lua_State* tolua_S)
 }
 #endif //#ifndef TOLUA_DISABLE
 
-/* method: destroyInstance of class  TaskQueue */
-#ifndef TOLUA_DISABLE_tolua_hivenet_TaskQueue_destroyInstance00
-static int tolua_hivenet_TaskQueue_destroyInstance00(lua_State* tolua_S)
+/* method: destroyInstance of class  HandlerQueue */
+#ifndef TOLUA_DISABLE_tolua_hivenet_HandlerQueue_destroyInstance00
+static int tolua_hivenet_HandlerQueue_destroyInstance00(lua_State* tolua_S)
 {
 #ifndef TOLUA_RELEASE
  tolua_Error tolua_err;
  if (
-     !tolua_isusertable(tolua_S,1,"TaskQueue",0,&tolua_err) ||
+     !tolua_isusertable(tolua_S,1,"HandlerQueue",0,&tolua_err) ||
      !tolua_isnoobj(tolua_S,2,&tolua_err)
  )
   goto tolua_lerror;
@@ -572,7 +506,7 @@ static int tolua_hivenet_TaskQueue_destroyInstance00(lua_State* tolua_S)
 #endif
  {
   {
-   TaskQueue::destroyInstance();
+   HandlerQueue::destroyInstance();
   }
  }
  return 0;
@@ -584,14 +518,14 @@ static int tolua_hivenet_TaskQueue_destroyInstance00(lua_State* tolua_S)
 }
 #endif //#ifndef TOLUA_DISABLE
 
-/* method: createWorker of class  TaskQueue */
-#ifndef TOLUA_DISABLE_tolua_hivenet_TaskQueue_createWorker00
-static int tolua_hivenet_TaskQueue_createWorker00(lua_State* tolua_S)
+/* method: createWorker of class  HandlerQueue */
+#ifndef TOLUA_DISABLE_tolua_hivenet_HandlerQueue_createWorker00
+static int tolua_hivenet_HandlerQueue_createWorker00(lua_State* tolua_S)
 {
 #ifndef TOLUA_RELEASE
  tolua_Error tolua_err;
  if (
-     !tolua_isusertype(tolua_S,1,"TaskQueue",0,&tolua_err) ||
+     !tolua_isusertype(tolua_S,1,"HandlerQueue",0,&tolua_err) ||
      !tolua_isnumber(tolua_S,2,0,&tolua_err) ||
      !tolua_isnoobj(tolua_S,3,&tolua_err)
  )
@@ -599,7 +533,7 @@ static int tolua_hivenet_TaskQueue_createWorker00(lua_State* tolua_S)
  else
 #endif
  {
-  TaskQueue* self = (TaskQueue*)  tolua_tousertype(tolua_S,1,0);
+  HandlerQueue* self = (HandlerQueue*)  tolua_tousertype(tolua_S,1,0);
   int workerNumber = ((int)  tolua_tonumber(tolua_S,2,0));
 #ifndef TOLUA_RELEASE
   if (!self) tolua_error(tolua_S,"invalid 'self' in function 'createWorker'", NULL);
@@ -617,76 +551,11 @@ static int tolua_hivenet_TaskQueue_createWorker00(lua_State* tolua_S)
 }
 #endif //#ifndef TOLUA_DISABLE
 
-/* method: acceptTask of class  TaskQueue */
-#ifndef TOLUA_DISABLE_tolua_hivenet_TaskQueue_acceptTask00
-static int tolua_hivenet_TaskQueue_acceptTask00(lua_State* tolua_S)
+/* get function: __Sync__ of class  HandlerQueue */
+#ifndef TOLUA_DISABLE_tolua_get_HandlerQueue___Sync__
+static int tolua_get_HandlerQueue___Sync__(lua_State* tolua_S)
 {
-#ifndef TOLUA_RELEASE
- tolua_Error tolua_err;
- if (
-     !tolua_isusertype(tolua_S,1,"TaskQueue",0,&tolua_err) ||
-     !tolua_isusertype(tolua_S,2,"TaskInterface",0,&tolua_err) ||
-     !tolua_isnoobj(tolua_S,3,&tolua_err)
- )
-  goto tolua_lerror;
- else
-#endif
- {
-  TaskQueue* self = (TaskQueue*)  tolua_tousertype(tolua_S,1,0);
-  TaskInterface* pTask = ((TaskInterface*)  tolua_tousertype(tolua_S,2,0));
-#ifndef TOLUA_RELEASE
-  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'acceptTask'", NULL);
-#endif
-  {
-   self->acceptTask(pTask);
-  }
- }
- return 0;
-#ifndef TOLUA_RELEASE
- tolua_lerror:
- tolua_error(tolua_S,"#ferror in function 'acceptTask'.",&tolua_err);
- return 0;
-#endif
-}
-#endif //#ifndef TOLUA_DISABLE
-
-/* method: getClassName of class  TaskQueue */
-#ifndef TOLUA_DISABLE_tolua_hivenet_TaskQueue_getClassName00
-static int tolua_hivenet_TaskQueue_getClassName00(lua_State* tolua_S)
-{
-#ifndef TOLUA_RELEASE
- tolua_Error tolua_err;
- if (
-     !tolua_isusertype(tolua_S,1,"const TaskQueue",0,&tolua_err) ||
-     !tolua_isnoobj(tolua_S,2,&tolua_err)
- )
-  goto tolua_lerror;
- else
-#endif
- {
-  const TaskQueue* self = (const TaskQueue*)  tolua_tousertype(tolua_S,1,0);
-#ifndef TOLUA_RELEASE
-  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'getClassName'", NULL);
-#endif
-  {
-   std::string tolua_ret = (std::string)  self->getClassName();
-   tolua_pushcppstring(tolua_S,(const char*)tolua_ret);
-  }
- }
- return 1;
-#ifndef TOLUA_RELEASE
- tolua_lerror:
- tolua_error(tolua_S,"#ferror in function 'getClassName'.",&tolua_err);
- return 0;
-#endif
-}
-#endif //#ifndef TOLUA_DISABLE
-
-/* get function: __Sync__ of class  TaskQueue */
-#ifndef TOLUA_DISABLE_tolua_get_TaskQueue___Sync__
-static int tolua_get_TaskQueue___Sync__(lua_State* tolua_S)
-{
-  TaskQueue* self = (TaskQueue*)  tolua_tousertype(tolua_S,1,0);
+  HandlerQueue* self = (HandlerQueue*)  tolua_tousertype(tolua_S,1,0);
 #ifndef TOLUA_RELEASE
   if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable '__Sync__'",NULL);
 #endif
@@ -1064,25 +933,15 @@ TOLUA_API int tolua_hivenet_open (lua_State* tolua_S)
   tolua_cclass(tolua_S,"HandlerInterface","HandlerInterface","RefObject",NULL);
   tolua_beginmodule(tolua_S,"HandlerInterface");
    tolua_function(tolua_S,"getClassName",tolua_hivenet_HandlerInterface_getClassName00);
+   tolua_variable(tolua_S,"__Sync__",tolua_get_HandlerInterface___Sync__,NULL);
   tolua_endmodule(tolua_S);
-  tolua_cclass(tolua_S,"TaskInterface","TaskInterface","RefObject",NULL);
-  tolua_beginmodule(tolua_S,"TaskInterface");
-   tolua_function(tolua_S,"getClassName",tolua_hivenet_TaskInterface_getClassName00);
-  tolua_endmodule(tolua_S);
-  tolua_cclass(tolua_S,"Worker","Worker","RefObject",NULL);
-  tolua_beginmodule(tolua_S,"Worker");
-   tolua_function(tolua_S,"getClassName",tolua_hivenet_Worker_getClassName00);
-   tolua_variable(tolua_S,"__Thread__",tolua_get_Worker___Thread__,NULL);
-  tolua_endmodule(tolua_S);
-  tolua_cclass(tolua_S,"TaskQueue","TaskQueue","RefObject",NULL);
-  tolua_beginmodule(tolua_S,"TaskQueue");
-   tolua_function(tolua_S,"getInstance",tolua_hivenet_TaskQueue_getInstance00);
-   tolua_function(tolua_S,"createInstance",tolua_hivenet_TaskQueue_createInstance00);
-   tolua_function(tolua_S,"destroyInstance",tolua_hivenet_TaskQueue_destroyInstance00);
-   tolua_function(tolua_S,"createWorker",tolua_hivenet_TaskQueue_createWorker00);
-   tolua_function(tolua_S,"acceptTask",tolua_hivenet_TaskQueue_acceptTask00);
-   tolua_function(tolua_S,"getClassName",tolua_hivenet_TaskQueue_getClassName00);
-   tolua_variable(tolua_S,"__Sync__",tolua_get_TaskQueue___Sync__,NULL);
+  tolua_cclass(tolua_S,"HandlerQueue","HandlerQueue","RefObject",NULL);
+  tolua_beginmodule(tolua_S,"HandlerQueue");
+   tolua_function(tolua_S,"getInstance",tolua_hivenet_HandlerQueue_getInstance00);
+   tolua_function(tolua_S,"createInstance",tolua_hivenet_HandlerQueue_createInstance00);
+   tolua_function(tolua_S,"destroyInstance",tolua_hivenet_HandlerQueue_destroyInstance00);
+   tolua_function(tolua_S,"createWorker",tolua_hivenet_HandlerQueue_createWorker00);
+   tolua_variable(tolua_S,"__Sync__",tolua_get_HandlerQueue___Sync__,NULL);
   tolua_endmodule(tolua_S);
   tolua_cclass(tolua_S,"Script","Script","HandlerInterface",NULL);
   tolua_beginmodule(tolua_S,"Script");
