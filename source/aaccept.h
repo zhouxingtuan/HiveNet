@@ -30,6 +30,8 @@ public:
 
 	virtual void onInitialize(void);
 	virtual void onDestroy(void);
+	virtual void readSocket(void);
+	virtual void writeSocket(void);
 
 	virtual inline void setSocket(const char* ip, unsigned short port){
 		strcpy(m_socket.ip, ip);
@@ -37,6 +39,8 @@ public:
 	}
 	virtual inline void setSocketFD(int fd){ m_socket.fd = fd; }
 	virtual inline int getSocketFD(void) const { return m_socket.fd; }
+	inline void setIdentify(bool identify){ m_isIdentify = identify; }
+	inline bool isIdentify(void) const { return m_isIdentify; }
 	inline unsigned short getIndex(void) const { return m_uniqueHandle.getIndex(); }
 	inline unsigned short getVersion(void) const { return m_uniqueHandle.getVersion(); }
 	inline unsigned int getHandle(void) const { return m_uniqueHandle.getHandle(); }
@@ -49,10 +53,16 @@ protected:
 	inline void increaseVersion(void){ m_uniqueHandle.increase(); }
 	inline void setIndex(unsigned short index){ m_uniqueHandle.setIndex(index); }
 protected:
-	Epoll* m_pEpoll;
-	UniqueHandle m_uniqueHandle;
 	SocketInformation m_socket;
+	Epoll* m_pEpoll;
+	Packet* m_tempReadPacket;
+	Packet* m_tempWritePacket;
+	UniqueHandle m_uniqueHandle;
+	volatile bool m_isIdentify;
 };//end class Accept
+
+DEFINE_TASK(TaskReadSocket, Accept, readSocket)
+DEFINE_TASK(TaskWriteSocket, Accept, writeSocket)
 
 NS_HIVENET_END
 

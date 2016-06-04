@@ -29,10 +29,13 @@ public:
 	inline bool isReadEnable(void) const { return PACKET_WRITE_ONLY != m_rwState; }
 	inline bool isWriteEnable(void) const { return PACKET_READ_ONLY != m_rwState; }
 	inline void setReadWriteState(PacketReadWriteState state){ m_rwState = state; }
+	inline void setCursor(int cur){ m_cursor = cur; }
 	inline void moveCursor(int length){ m_cursor += length; }
 	inline int getCursor(void) const { return m_cursor; }
 	inline void resetCursor(void){ m_cursor = 0; }
 	inline Buffer* getBuffer(void){ return m_pBuffer; }
+	inline char* getCursorPtr(void){ return m_pBuffer->data() + m_cursor; }
+	inline int getLength(void) const { return (int)m_pBuffer.size(); }
 
 	inline int write(const void* ptr, int length){
 		if( !isWriteEnable() ){

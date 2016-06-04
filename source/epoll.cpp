@@ -57,13 +57,35 @@ bool Epoll::sendPacket(unsigned int handle, Packet* pPacket){
 }
 unsigned int Epoll::createClient(const char* ip, unsigned short port){
 
-	return -1;
+	return 0;
 }
 void Epoll::closeClient(unsigned int handle){
 
 }
 void Epoll::closeAccept(unsigned int handle){
 
+}
+bool Epoll::acceptSocket(void){
+	struct sockaddr_in cliaddr;
+	socklen_t socklen = sizeof(struct sockaddr_in);
+	int fd;
+	fd = accept(m_socket.fd, (struct sockaddr*)&cliaddr, &socklen);
+	if(fd < 0){
+		return true;
+	}
+	if(setNonBlocking(fd) < 0){
+		close(fd);
+		return true;
+	}
+	// 获取一个连接对象Accept，将对象一并加入到epoll中
+//	if( epollAdd(m_epollfd, fd, pAgent) < 0 ){
+//		return false;
+//	}
+//	++m_curfds;
+//	pAgent->setSocketFD( fd );
+//	pAgent->setPort( cliaddr.sin_port );
+//	pAgent->setIP( inet_ntoa(cliaddr.sin_addr) );
+	return true;
 }
 bool Epoll::createEpoll(void){
     m_epollfd = epoll_create(MAX_LISTEN_SIZE);
@@ -95,7 +117,7 @@ bool Epoll::waitEpoll(void){
         pEvent = &m_events[n];
         ptr = pEvent->data.ptr;
         if(ptr == NULL){
-            fprintf(stderr, "we have and empty ptr\n");
+            fprintf(stderr, "we have an empty ptr\n");
             continue;   // 这个会发生吗？
         }
         if(ptr == this){

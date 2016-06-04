@@ -27,8 +27,7 @@ public:
 	virtual TaskInterface* createClientIn(unsigned int handle, Epoll* pEpoll) = 0;
 	virtual TaskInterface* createClientOut(unsigned int handle, Epoll* pEpoll) = 0;
 	virtual TaskInterface* createPacketIn(unsigned int handle, Epoll* pEpoll, Packet* pPacket) = 0;
-	virtual TaskInterface* createPacketOut(unsigned int handle, Epoll* pEpoll, Packet* pPacket) = 0;
-};// end class
+};// end class EpollTaskFactory
 
 #define MAX_LISTEN_SIZE 11008
 #define MAX_EPOLL_EVENT 64
@@ -75,6 +74,7 @@ public:
 	virtual bool sendPacket(unsigned int handle, Packet* pPacket);
 	virtual unsigned int createClient(const char* ip, unsigned short port);
 	virtual void closeClient(unsigned int handle);
+	virtual bool acceptSocket(void);
 	virtual void closeAccept(unsigned int handle);
 	virtual inline void setListenSocket(const char* ip, unsigned short port){
 		strcpy(m_socket.ip, ip);
