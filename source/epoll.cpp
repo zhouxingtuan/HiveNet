@@ -172,7 +172,7 @@ bool Epoll::sendAcceptPacket(unsigned int handle, Packet* pPacket){
 	TaskWriteSocket* writeTask = new TaskWriteSocket(pAccept, pPacket);
 	writeTask->commitTaskSilence();
 	changeStateOut(pAccept);	// 更改epoll状态，等待可写
-	return false;
+	return true;
 }
 bool Epoll::sendClientPacket(unsigned int handle, Packet* pPacket){
 	Client* pClient = (Client*)(m_pClients->getByHandle(handle));
@@ -183,7 +183,7 @@ bool Epoll::sendClientPacket(unsigned int handle, Packet* pPacket){
 	TaskWriteSocket* writeTask = new TaskWriteSocket(pClient, pPacket);
 	writeTask->commitTaskSilence();
 	changeStateOut(pClient);	// 更改epoll状态，等待可写
-	return false;
+	return true;
 }
 unsigned int Epoll::createClient(const char* ip, unsigned short port){
 	Client* pClient = m_pClients->createClient(this);
@@ -248,7 +248,7 @@ bool Epoll::acceptSocket(void){
 	}
     if(m_curfds >= MAX_LISTEN_SIZE){
         close(fd);
-        return false;
+        return true;
     }
 	if(setNonBlocking(fd) < 0){
 		close(fd);
@@ -257,6 +257,8 @@ bool Epoll::acceptSocket(void){
 	// 获取一个连接对象Accept，将对象一并加入到epoll中
 	Accept* pAccept = m_pAccepts->createAccept(this);
 	if( epollAdd(m_epollfd, fd, pAccept) < 0 ){
+		close(fd);
+		m_pAccepts->idle(pAccept);
 		return false;
 	}
 	++m_curfds;
