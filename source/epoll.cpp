@@ -140,6 +140,12 @@ bool Epoll::onDestroy(void){
 	closeListenSocket();
 	return true;
 }
+bool Epoll::onUpdate(void){
+	if( !waitEpoll() ){
+		return true;
+	}
+	return true;
+}
 bool Epoll::onRemoveSocket(Accept* pAccept){
 	// 根据对象的类型，分类设置这个对象到idle中等待被使用
 	SocketHandlerType handlerType = pAccept->getSocketHandlerType();
@@ -157,17 +163,12 @@ bool Epoll::onRemoveSocket(Accept* pAccept){
 	pAccept->resetData();	// 重置对象的数据
 	return true;
 }
-bool Epoll::onUpdate(void){
-	if( !waitEpoll() ){
-		return true;
-	}
-	return true;
-}
 bool Epoll::sendAcceptPacket(unsigned int handle, Packet* pPacket){
 	Accept* pAccept = m_pAccepts->getByHandle(handle);
 	if( NULL == pAccept ){
 		return false;
 	}
+	pPacket->resetCursor();		// 后面的写操作需要重置
 	TaskWriteSocket* writeTask = new TaskWriteSocket(pAccept, pPacket);
 	writeTask->commitTaskSilence();
 	changeStateOut(pAccept);	// 更改epoll状态，等待可写
@@ -178,6 +179,7 @@ bool Epoll::sendClientPacket(unsigned int handle, Packet* pPacket){
 	if( NULL == pClient ){
 		return false;
 	}
+	pPacket->resetCursor();		// 后面的写操作需要重置
 	TaskWriteSocket* writeTask = new TaskWriteSocket(pClient, pPacket);
 	writeTask->commitTaskSilence();
 	changeStateOut(pClient);	// 更改epoll状态，等待可写
@@ -209,6 +211,7 @@ bool Epoll::receivePacket(unsigned int handle, Packet* pPacket){
 		fprintf(stderr, "--Epoll::receivePacket m_pFactory is NULL\n");
 		return false;
 	}
+	pPacket->resetCursor();		// 后面的读操作需要重置
 	TaskInterface* pTask = m_pFactory->createPacketIn(handle, this, pPacket);
 	pTask->commitTask();
 	return true;
