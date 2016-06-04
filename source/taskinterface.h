@@ -22,7 +22,8 @@ public:
 	virtual ~TaskInterface(void);
 
 	virtual void commitTask(void);		// 提交任务到流水线中
-	virtual void doTask(void) = 0;		// 执行任务内容
+	virtual void commitTaskSilence(void);	// 只提交任务，不激活
+	virtual bool doTask(void) = 0;		// 执行任务内容
 
 	inline HandlerInterface* getHandler(void){ return m_pHandler; }
     virtual inline std::string getClassName(void) const {
@@ -38,8 +39,8 @@ class _NAME_ : public TaskInterface\
 public:\
 	explicit _NAME_(_HANDLER_* pHandler) : TaskInterface(pHandler){}\
 	virtual ~_NAME_(void){}\
-	virtual void doTask(void){\
-		((_HANDLER_*)getHandler())->_FUNCTION_();\
+	virtual bool doTask(void){\
+		return ((_HANDLER_*)getHandler())->_FUNCTION_();\
 	}\
 };
 
@@ -49,11 +50,11 @@ class _NAME_ : public TaskInterface\
 public:\
 	explicit _NAME_(_HANDLER_* pHandler, _PARAM_* p##_PARAM_)\
 		: TaskInterface(pHandler), m_p##_PARAM_(p##_PARAM_){\
-		m_p##_PARAM_->retain();\
+		SAFE_RETAIN(m_p##_PARAM_)\
 	}\
-	virtual ~_NAME_(void){ m_p##_PARAM_->release(); }\
-	virtual void doTask(void){\
-		((_HANDLER_*)getHandler())->_FUNCTION_(m_p##_PARAM_);\
+	virtual ~_NAME_(void){ SAFE_RELEASE(m_p##_PARAM_); }\
+	virtual bool doTask(void){\
+		return ((_HANDLER_*)getHandler())->_FUNCTION_(m_p##_PARAM_);\
 	}\
 protected:\
 	_PARAM_* m_p##_PARAM_;\

@@ -10,12 +10,103 @@
 
 NS_HIVENET_BEGIN
 
+AcceptManager::AcceptManager(void) : RefObject(), Sync() {
+
+}
+AcceptManager::~AcceptManager(void){
+	releaseData();
+}
+void AcceptManager::releaseData(void){
+	lock();
+	for( auto pAccept : m_accepts ){
+		pAccept->release();
+	}
+	m_accepts.clear();
+	unlock();
+}
+Client* AcceptManager::createClient(Epoll* pEpoll){
+	unsigned int index;
+    Client* ret;
+    lock();
+    if( !m_idleIndex.empty() ){
+    	index = m_idleIndex.back();
+    	m_idleIndex.pop_back();
+		ret = (Client*)(m_accepts[index]);
+		if( NULL == ret ){
+			ret = new Client(pEpoll);
+			ret->retain();
+			ret->setIndex(index);
+			m_accepts[index] = ret;
+		}
+    }else{
+    	index = m_accepts.size();
+    	ret = new Client(pEpoll);
+		ret->retain();
+		ret->setIndex(index);
+		m_accepts.push_back(ret);
+    }
+    unlock();
+	return ret;
+}
+Accept* AcceptManager::createAccept(Epoll* pEpoll){
+	unsigned int index;
+    Accept* ret;
+    lock();
+    if( !m_idleIndex.empty() ){
+    	index = m_idleIndex.back();
+    	m_idleIndex.pop_back();
+		ret = m_accepts[index];
+		if( NULL == ret ){
+			ret = new Accept(pEpoll);
+			ret->retain();
+			ret->setIndex(index);
+			m_accepts[index] = ret;
+		}
+    }else{
+    	index = m_accepts.size();
+    	ret = new Accept(pEpoll);
+		ret->retain();
+		ret->setIndex(index);
+		m_accepts.push_back(ret);
+    }
+    unlock();
+	return ret;
+}
+void AcceptManager::idle(Accept* pAccept){
+	UniqueHandle h = pAccept->getHandle();
+	unsigned short index = h.getIndex();
+	lock();
+	m_idleIndex.push_back(index);
+	unlock();
+}
+Accept* AcceptManager::getByHandle(unsigned int handle){
+	Accept* ret = NULL;
+	UniqueHandle h = handle;
+	unsigned short index = h.getIndex();
+	lock();
+	if( index < m_accepts.size() ){
+		ret = m_accepts[index];
+	}
+	unlock();
+	if( NULL != ret && ret->getHandle() != handle ){
+		return NULL;
+	}
+	return ret;
+}
+
 static Epoll* g_pEpoll = NULL;
-Epoll::Epoll() : HandlerInterface(), m_curfds(0), m_epollfd(0) {
+Epoll::Epoll() : HandlerInterface(), m_pFactory(NULL),
+ 	m_pAccepts(NULL), m_pClients(NULL), m_curfds(0), m_epollfd(0) {
 	memset(&m_socket, 0, sizeof(struct SocketInformation));
+	m_pAccepts = new AcceptManager();
+	m_pAccepts->retain();
+	m_pClients = new AcceptManager();
+	m_pClients->retain();
 }
 Epoll::~Epoll(){
 	closeListenSocket();  // 关闭套接字
+	m_pAccepts->release();
+	m_pClients->release();
 }
 Epoll* Epoll::getInstance(void){
 	return g_pEpoll;
@@ -30,40 +121,119 @@ Epoll* Epoll::createInstance(void){
 void Epoll::destroyInstance(void){
     SAFE_RELEASE(g_pEpoll)
 }
-void Epoll::onInitialize(void){
+bool Epoll::onInitialize(void){
 	if( 0 == m_socket.port ){
 		fprintf(stderr, "--Epoll::onInitialize socket ip and port is not set yet\n");
-		return;
+		return true;
 	}
 	if( !initListenSocket() ){
 		fprintf(stderr, "--Epoll::onInitialize initListenSocket failed\n");
-		return;
+		return true;
 	}
 	if( !createEpoll() ){
 		fprintf(stderr, "--Epoll::onInitialize socket createEpoll failed\n"); // epoll 创建失败
-		return;
+		return true;
 	}
+	return true;
 }
-void Epoll::onDestroy(void){
+bool Epoll::onDestroy(void){
 	closeListenSocket();
+	return true;
 }
-void Epoll::onUpdate(void){
-	if( !waitEpoll() ){
-		return;
+bool Epoll::onRemoveSocket(Accept* pAccept){
+	// 根据对象的类型，分类设置这个对象到idle中等待被使用
+	SocketHandlerType handlerType = pAccept->getSocketHandlerType();
+	if( SOCKET_HANDLER_ACCEPT == handlerType ){
+		TaskInterface* pTask = m_pFactory->createAcceptOut(pAccept->getHandle(), this);
+		pTask->commitTask();
+		m_pAccepts->idle(pAccept);
+	}else if( SOCKET_HANDLER_CLIENT == handlerType ){
+		TaskInterface* pTask = m_pFactory->createClientOut(pAccept->getHandle(), this);
+		pTask->commitTask();
+		m_pClients->idle(pAccept);
+	}else{
+		fprintf(stderr, "--Epoll::onRemoveSocket unknown handler type\n");
 	}
+	pAccept->resetData();	// 重置对象的数据
+	return true;
 }
-bool Epoll::sendPacket(unsigned int handle, Packet* pPacket){
+bool Epoll::onUpdate(void){
+	if( !waitEpoll() ){
+		return true;
+	}
+	return true;
+}
+bool Epoll::sendAcceptPacket(unsigned int handle, Packet* pPacket){
+	Accept* pAccept = m_pAccepts->getByHandle(handle);
+	if( NULL == pAccept ){
+		return false;
+	}
+	TaskWriteSocket* writeTask = new TaskWriteSocket(pAccept, pPacket);
+	writeTask->commitTaskSilence();
+	changeStateOut(pAccept);	// 更改epoll状态，等待可写
+	return false;
+}
+bool Epoll::sendClientPacket(unsigned int handle, Packet* pPacket){
+	Client* pClient = (Client*)(m_pClients->getByHandle(handle));
+	if( NULL == pClient ){
+		return false;
+	}
+	TaskWriteSocket* writeTask = new TaskWriteSocket(pClient, pPacket);
+	writeTask->commitTaskSilence();
+	changeStateOut(pClient);	// 更改epoll状态，等待可写
 	return false;
 }
 unsigned int Epoll::createClient(const char* ip, unsigned short port){
-
-	return 0;
+	Client* pClient = m_pClients->createClient(this);
+	unsigned int handle = pClient->getHandle();
+	pClient->setSocket(ip, port);
+	// 生成连接任务，让线程来处理连接
+	TaskInitialize* pTask = new TaskInitialize(pClient);
+	pTask->commitTask();
+	return handle;
 }
 void Epoll::closeClient(unsigned int handle){
-
+	Client* pClient = (Client*)(m_pClients->getByHandle(handle));
+	if( NULL != pClient ){
+		pClient->removeSocket();
+	}
 }
 void Epoll::closeAccept(unsigned int handle){
-
+	Accept* pAccept = m_pAccepts->getByHandle(handle);
+	if( NULL != pAccept ){
+		pAccept->removeSocket();
+	}
+}
+bool Epoll::receivePacket(unsigned int handle, Packet* pPacket){
+	if( NULL == m_pFactory ){
+		fprintf(stderr, "--Epoll::receivePacket m_pFactory is NULL\n");
+		return false;
+	}
+	TaskInterface* pTask = m_pFactory->createPacketIn(handle, this, pPacket);
+	pTask->commitTask();
+	return true;
+}
+bool Epoll::receiveClient(Client* pClient){
+	int fd = pClient->getSocketFD();
+    if(fd < 0){
+        return false;
+    }
+    if(m_curfds >= MAX_LISTEN_SIZE){
+        close(fd);
+        return false;
+    }
+    if(setNonBlocking(fd) < 0){
+        close(fd);
+        return false;
+    }
+    if( epollAdd(m_epollfd, fd, pClient) < 0 ){
+        close(fd);
+        return false;
+    }
+    ++m_curfds;
+    TaskInterface* pTask = m_pFactory->createClientIn(pClient->getHandle(), this);
+	pTask->commitTask();
+    return true;
 }
 bool Epoll::acceptSocket(void){
 	struct sockaddr_in cliaddr;
@@ -73,18 +243,24 @@ bool Epoll::acceptSocket(void){
 	if(fd < 0){
 		return true;
 	}
+    if(m_curfds >= MAX_LISTEN_SIZE){
+        close(fd);
+        return false;
+    }
 	if(setNonBlocking(fd) < 0){
 		close(fd);
 		return true;
 	}
 	// 获取一个连接对象Accept，将对象一并加入到epoll中
-//	if( epollAdd(m_epollfd, fd, pAgent) < 0 ){
-//		return false;
-//	}
-//	++m_curfds;
-//	pAgent->setSocketFD( fd );
-//	pAgent->setPort( cliaddr.sin_port );
-//	pAgent->setIP( inet_ntoa(cliaddr.sin_addr) );
+	Accept* pAccept = m_pAccepts->createAccept(this);
+	if( epollAdd(m_epollfd, fd, pAccept) < 0 ){
+		return false;
+	}
+	++m_curfds;
+	pAccept->setSocketFD( fd );
+	pAccept->setSocket( inet_ntoa(cliaddr.sin_addr), cliaddr.sin_port );
+    TaskInterface* pTask = m_pFactory->createAcceptIn(pAccept->getHandle(), this);
+	pTask->commitTask();
 	return true;
 }
 bool Epoll::createEpoll(void){
@@ -100,7 +276,6 @@ bool Epoll::createEpoll(void){
         return false;
     }
     ++m_curfds;
-//    fprintf(stderr,"--Epoll::create bind socket ok fd(%d) ip(%s) port(%d)\n", m_socket.fd, m_socket.ip, m_socket.port);
     return true;
 }
 bool Epoll::waitEpoll(void){
@@ -121,25 +296,21 @@ bool Epoll::waitEpoll(void){
             continue;   // 这个会发生吗？
         }
         if(ptr == this){
-//            if( acceptSocket() ){
-//                continue;
-//            }else{
-//                return false;
-//            }
+            if( acceptSocket() ){
+                continue;
+            }else{
+                return false;
+            }
         }
         if(pEvent->events & EPOLLIN){
-//            if( !readMessage( (Agent*)ptr ) ){
-//                removeSocket( (Agent*)ptr );
-//                continue;
-//            }
+        	TaskReadSocket* readTask = new TaskReadSocket((Accept*)ptr);
+        	readTask->commitTask();
         }
         if(pEvent->events & EPOLLOUT){
-//            if( !writeMessage( (Agent*)ptr ) ){
-//                removeSocket( (Agent*)ptr );
-//            }
+        	((Accept*)ptr)->notifyHandlerQueue();
             continue;
         }else if(pEvent->events & EPOLLERR){
-//            removeSocket( (Agent*)ptr );
+        	((Accept*)ptr)->removeSocket();
             continue;
         }
     }//end handle events for loop

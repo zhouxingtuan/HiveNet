@@ -65,8 +65,12 @@ void ScriptManager::idle(unsigned int handle){
 	if( index < m_scripts.size() ){
 		ret = m_scripts[index];
 		if( NULL != ret ){
-			ret->increaseVersion();	// 这里对这个对象进行了重复使用
-			m_idleIndex.push_back(index);
+			if( ret->getHandle() == handle ){
+				ret->increaseVersion();	// 这里对这个对象进行了重复使用
+				m_idleIndex.push_back(index);
+			}else{
+				ret = NULL;
+			}
 		}
     }
 	unlock();
@@ -83,7 +87,12 @@ void ScriptManager::remove(unsigned int handle){
 		ret = m_scripts[index];
 		m_scripts[index] = NULL;
 		if( NULL != ret ){
-			m_idleIndex.push_back(index);
+			if(handle == ret->getHandle()){
+				m_idleIndex.push_back(index);
+			}else{
+				ret = NULL;
+			}
+
 		}
     }
 	unlock();
@@ -103,6 +112,9 @@ Script* ScriptManager::getScript(unsigned int handle){
 		ret = m_scripts[index];
 	}
 	unlock();
+	if( NULL != ret && ret->getHandle() != handle ){
+		return NULL;
+	}
 	return ret;
 }
 //打开当前的Lua状态机

@@ -19,15 +19,13 @@ public:
 	explicit Client(Epoll* pEpoll);
 	virtual ~Client(void);
 
-	virtual void onInitialize(void);
-	virtual void onDestroy(void);
+	virtual bool onInitialize(void);
 
-	virtual bool connectServer(void);
     virtual inline std::string getClassName(void) const {
         return "Client";
     }
 protected:
-
+	virtual bool connectServer(void);
 };
 
 NS_HIVENET_END

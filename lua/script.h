@@ -33,10 +33,10 @@ public:
     virtual ~Script( void );
 
 	// interface
-	virtual void onInitialize(void);
-	virtual void onDestroy(void);
-	virtual void onHandleMessage(Packet* pPacket);
-	virtual void onUpdate(void);
+	virtual bool onInitialize(void);
+	virtual bool onDestroy(void);
+	virtual bool onHandleMessage(Packet* pPacket);
+	virtual bool onUpdate(void);
 
     inline void setInitString(const char* initFile){ m_initString = initFile; }
     inline const std::string& getInitString(void) const { return m_initString; }

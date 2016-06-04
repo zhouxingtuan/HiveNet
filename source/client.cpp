@@ -12,17 +12,18 @@
 NS_HIVENET_BEGIN
 
 Client::Client(Epoll* pEpoll) : Accept(pEpoll) {
-
+	m_handlerType = SOCKET_HANDLER_CLIENT;
 }
 Client::~Client(void){
 
 }
-void Client::onInitialize(void){
-
-}
-void Client::onDestroy(void){
-	closeSocket();	// 关闭套接字
-	// 修改epoll中的状态
+bool Client::onInitialize(void){
+	if( connectServer() ){
+		if( !m_pEpoll->receiveClient(this) ){
+			removeSocket();
+		}
+	}
+	return true;
 }
 bool Client::connectServer(void){
     int fd;

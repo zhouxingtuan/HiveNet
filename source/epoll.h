@@ -14,7 +14,7 @@
 #include "client.h"
 
 NS_HIVENET_BEGIN
-
+/*--------------------------------------------------------------------*/
 class Epoll;
 class EpollTaskFactory
 {
@@ -28,7 +28,27 @@ public:
 	virtual TaskInterface* createClientOut(unsigned int handle, Epoll* pEpoll) = 0;
 	virtual TaskInterface* createPacketIn(unsigned int handle, Epoll* pEpoll, Packet* pPacket) = 0;
 };// end class EpollTaskFactory
+/*--------------------------------------------------------------------*/
+class AcceptManager : public RefObject, public Sync
+{
+public:
+	typedef std::vector<Accept*> AcceptVector;
+	typedef std::vector<int> IntVector;
+public:
+	AcceptManager(void);
+	virtual ~AcceptManager(void);
 
+	Accept* createAccept(Epoll* pEpoll);
+	Client* createClient(Epoll* pEpoll);
+	void idle(Accept* pAccept);
+	Accept* getByHandle(unsigned int handle);
+protected:
+	void releaseData(void);
+protected:
+	AcceptVector m_accepts;
+	IntVector m_idleIndex;
+};// end class AcceptManager
+/*--------------------------------------------------------------------*/
 #define MAX_LISTEN_SIZE 11008
 #define MAX_EPOLL_EVENT 64
 #define EPOLL_WAIT_FLAG -1
@@ -60,6 +80,9 @@ inline int epollChange(int epollfd, int fd, void* ptr, unsigned int events=EPOLL
 class Epoll : public HandlerInterface
 {
 public:
+	friend class Accept;
+	friend class Client;
+public:
 	Epoll(void);
 	virtual ~Epoll(void);
 
@@ -67,11 +90,14 @@ public:
 	static Epoll* createInstance(void);
 	static void destroyInstance(void);
 
-	virtual void onInitialize(void);
-	virtual void onDestroy(void);
-	virtual void onUpdate(void);
+	virtual bool onInitialize(void);
+	virtual bool onDestroy(void);
+	virtual bool onUpdate(void);
 
-	virtual bool sendPacket(unsigned int handle, Packet* pPacket);
+	virtual bool sendAcceptPacket(unsigned int handle, Packet* pPacket);
+	virtual bool sendClientPacket(unsigned int handle, Packet* pPacket);
+	virtual EpollTaskFactory* getFactory(void){ return m_pFactory; }
+	virtual void setFactory(EpollTaskFactory* pFactory){ m_pFactory = pFactory; }
 	virtual unsigned int createClient(const char* ip, unsigned short port);
 	virtual void closeClient(unsigned int handle);
 	virtual bool acceptSocket(void);
@@ -84,17 +110,38 @@ public:
         return "Epoll";
     }
 protected:
+	virtual bool onRemoveSocket(Accept* pAccept);
+	bool receiveClient(Client* pClient);
+	bool receivePacket(unsigned int handle, Packet* pPacket);
+	inline void changeStateOut(Accept* pAccept){
+		if( pAccept->triggerStateOutFlag() ){
+			if( epollChange(m_epollfd, pAccept->getSocketFD(), pAccept, EPOLLIN | EPOLLOUT) < 0 ){
+				pAccept->clearStateOutFlag();    /// 如果当前修改失败，下次还得重来
+			}
+		}
+	}
+	inline void changeStateIn(Accept* pAccept){
+		epollChange(m_epollfd,  pAccept->getSocketFD(), pAccept, EPOLLIN);
+		pAccept->clearStateOutFlag();
+	}
+	inline void changeStateRemove(Accept* pAccept){
+		epollRemove(m_epollfd, pAccept->getSocketFD());
+	}
 	bool initListenSocket(void);
 	void closeListenSocket(void);
 	bool createEpoll(void);
 	bool waitEpoll(void);
 protected:
+	EpollTaskFactory* m_pFactory;
+	AcceptManager* m_pAccepts;
+	AcceptManager* m_pClients;
 	volatile int m_curfds;
 	int m_epollfd;
 	struct epoll_event m_events[MAX_EPOLL_EVENT];
 	SocketInformation m_socket;
-
 };// end class Epoll
+
+//DEFINE_TASK_PARAM(TaskRemoveSocket, Epoll, onRemoveSocket, Accept)
 
 NS_HIVENET_END
 

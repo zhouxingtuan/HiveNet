@@ -43,25 +43,29 @@ Script::~Script(void){
     lua_close(m_pState); // 先关闭自己
     SAFE_RELEASE(m_pMaster)  // 释放掉master的占用
 }
-void Script::onInitialize(void){
+bool Script::onInitialize(void){
 	static char onInitialize[]="onInitialize";
 	// 初始化加载Lua代码文件
 	executeText( m_initString.c_str(), m_initString.length() );
 	// 初始化调用 onInitialize 函数，会回传当前Script的指针，这个指针在Lua生命周期内都是有效的
 	callGlobalFunction(onInitialize, this, getClassName().c_str());
+	return true;
 }
-void Script::onHandleMessage(Packet* pPacket){
+bool Script::onHandleMessage(Packet* pPacket){
 	static char onHandleMessage[]="onHandleMessage";
 	static char namePacket[]="Packet";
 	callGlobalFunction(onHandleMessage, pPacket, namePacket);
+	return true;
 }
-void Script::onUpdate(void){
+bool Script::onUpdate(void){
 	static char onUpdate[]="onUpdate";
 	callGlobalFunction( onUpdate );
+	return true;
 }
-void Script::onDestroy(void){
+bool Script::onDestroy(void){
     static char onDestroy[]="onDestroy";
     callGlobalFunction( onDestroy );
+    return true;
 }
 
 

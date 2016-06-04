@@ -20,5 +20,8 @@ TaskInterface::~TaskInterface(void){
 void TaskInterface::commitTask(void){
 	m_pHandler->acceptTask(this);
 }
+void TaskInterface::commitTaskSilence(void){
+	m_pHandler->acceptTaskSilence(this);
+}
 
 NS_HIVENET_END

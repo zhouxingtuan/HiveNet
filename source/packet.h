@@ -35,8 +35,8 @@ public:
 	inline void resetCursor(void){ m_cursor = 0; }
 	inline Buffer* getBuffer(void){ return m_pBuffer; }
 	inline char* getCursorPtr(void){ return m_pBuffer->data() + m_cursor; }
-	inline int getLength(void) const { return (int)m_pBuffer.size(); }
-
+	inline int getLength(void) const { return (int)m_pBuffer->size(); }
+	inline bool isCursorEnd(void) const { return getCursor() >= getLength(); }
 	inline int write(const void* ptr, int length){
 		if( !isWriteEnable() ){
 			return 0;
