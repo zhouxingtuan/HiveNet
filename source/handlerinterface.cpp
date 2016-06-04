@@ -28,28 +28,34 @@ void HandlerInterface::releaseTask(void){
 void HandlerInterface::doHandler(void){
 	TaskInterface* pTask = NULL;
 	bool doTaskFinished = false;
+	bool releaseTaskAtEnd = false;
 	this->lock();
 	if( !m_taskQueue.empty() ){
-		pTask = m_taskQueue.front();	// 这里获取第一个任务来执行
+		pTask = m_taskQueue.front();		// 这里获取第一个任务来执行
+		pTask->retain();					// 在执行前需要自己保留引用(1)，因为别的线程很可能调用releaseTask
 	}
 	this->unlock();
 	if( NULL != pTask ){
-		doTaskFinished = pTask->doTask();		// 执行任务，因为已经保证handler被worker独占，所以可以不在临界区内
-		if( doTaskFinished ){
-			pTask->release();					// 执行结束才可以释放
-		}
+		doTaskFinished = pTask->doTask(); 	// 执行任务，因为已经保证handler被worker独占，所以可以不在临界区内
+		pTask->release();					// 这次释放对应的是前面获取时保留的引用(1)
 	}
 	this->lock();
-	if( doTaskFinished ){
-		m_taskQueue.pop_front();			// 任务有可能在一次执行中未结束，需要重新执行
+	// 任务有可能在一次执行中未结束，需要重新执行，检查doTaskFinished
+	// 在上面执行的过程中，很可能被调用releaseTask清空了队列，这里执行反向检查
+	if( doTaskFinished && !m_taskQueue.empty() && m_taskQueue.front() == pTask ){
+		releaseTaskAtEnd = true;			// 在这里释放对象会占用大量临界区的时间，先标记，放到最后执行
+		m_taskQueue.pop_front();			// 将前面执行的任务出队
 	}
-	if( m_taskQueue.empty() ){	// 执行结束之后，如果队列里面没有任务，那么不将handler重新提交
+	if( m_taskQueue.empty() ){				// 执行结束之后，如果队列里面没有任务，那么不将handler重新提交
 		m_isInHandlerQueue = false;
 		this->unlock();
 	}else{
 		m_isInHandlerQueue = true;
 		this->unlock();
-		HandlerQueue::getInstance()->acceptHandler(this);	// 重新讲handler提交给队列
+		HandlerQueue::getInstance()->acceptHandler(this);	// 重新将handler提交给队列
+	}
+	if( releaseTaskAtEnd ){
+		pTask->release();					// 执行结束才可以释放，对应的是进入队列时的retain
 	}
 }
 void HandlerInterface::acceptTask(TaskInterface* pTask){
@@ -61,7 +67,7 @@ void HandlerInterface::acceptTask(TaskInterface* pTask){
 	}else{						// 原先不在队列中则重新入队
 		m_isInHandlerQueue = true;
 		this->unlock();
-		HandlerQueue::getInstance()->acceptHandler(this);	// 重新讲handler提交给队列
+		HandlerQueue::getInstance()->acceptHandler(this);	// 重新将handler提交给队列
 	}
 }
 void HandlerInterface::acceptTaskSilence(TaskInterface* pTask){
@@ -80,7 +86,7 @@ void HandlerInterface::notifyHandlerQueue(void){
 		}else{
 			m_isInHandlerQueue = true;
 			this->unlock();
-			HandlerQueue::getInstance()->acceptHandler(this);	// 重新讲handler提交给队列
+			HandlerQueue::getInstance()->acceptHandler(this);	// 重新将handler提交给队列
 		}
 	}
 }

@@ -25,10 +25,11 @@ int Worker::threadFunction(void){
 		while(NULL == pHandler){
 			m_pHandlerQueue->wait();
 			pHandler = m_pHandlerQueue->nextHandler();	// 临界区: Handler在进入队列的时候已经retain过了，所以这里直接使用
+			// 注解：因为HandlerQueue是一个全局的队列，基本不会去释放队列中的Handler对象，所有在处理Handler时不需要重新引用
 		};
 		m_pHandlerQueue->unlock();
 		pHandler->doHandler();	// 执行任务内容
-		pHandler->release();	// 执行完之后释放掉
+		pHandler->release();	// 执行完之后释放掉，对应的是入队时的retain
 	};
 	return 0;
 }
