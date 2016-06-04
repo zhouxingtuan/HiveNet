@@ -69,9 +69,7 @@ int main(int argc, char *argv[])
 	pScript->onDestroy();
 
 	TaskUpdate* pUpdate = new TaskUpdate(pScript);
-	pUpdate->retain();
 	pUpdate->commitTask();
-	pUpdate->release();
 
 	sleep(3);
 	HandlerQueue::destroyInstance();

@@ -32,6 +32,33 @@ protected:
 	HandlerInterface* m_pHandler;
 };// end class HandlerInterface
 
+#define DEFINE_TASK(_NAME_, _HANDLER_, _FUNCTION_)\
+class _NAME_ : public TaskInterface\
+{\
+public:\
+	explicit _NAME_(_HANDLER_* pHandler) : TaskInterface(pHandler){}\
+	virtual ~_NAME_(void){}\
+	virtual void doTask(void){\
+		((_HANDLER_*)getHandler())->_FUNCTION_();\
+	}\
+};
+
+#define DEFINE_TASK_PARAM(_NAME_, _HANDLER_, _FUNCTION_, _PARAM_)\
+class _NAME_ : public TaskInterface\
+{\
+public:\
+	explicit _NAME_(_HANDLER_* pHandler, _PARAM_* p##_PARAM_)\
+		: TaskInterface(pHandler), m_p##_PARAM_(p##_PARAM_){\
+		m_p##_PARAM_->retain();\
+	}\
+	virtual ~_NAME_(void){ m_p##_PARAM_->release(); }\
+	virtual void doTask(void){\
+		((_HANDLER_*)getHandler())->_FUNCTION_(m_p##_PARAM_);\
+	}\
+protected:\
+	_PARAM_* m_p##_PARAM_;\
+};
+
 NS_HIVENET_END
 
 #endif

@@ -15,6 +15,9 @@ HandlerInterface::HandlerInterface(void) : RefObject(), Sync(), m_isInHandlerQue
 
 }
 HandlerInterface::~HandlerInterface(void){
+	releaseTask();
+}
+void HandlerInterface::releaseTask(void){
 	this->lock();
 	for( auto pTask : m_taskQueue ){
 		pTask->release();

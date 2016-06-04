@@ -9,7 +9,7 @@ INCLUDES = -I$(OPENSSL_INC) -I$(JEMALLOC_INC)
 CFLAGS = -O2 -Wall -pthread $(INCLUDES) -L$(OPENSSL_LIB) -lssl -lcrypto -lstdc++ -std=c++11 -ldl
 CC = gcc
 
-OBJS = common.o buffer.o packet.o taskinterface.o handlerinterface.o worker.o handlerqueue.o taskhandler.o
+OBJS = common.o buffer.o packet.o taskinterface.o handlerinterface.o worker.o handlerqueue.o accept.o client.o epoll.o
 
 all: $(OBJS)
 
@@ -30,4 +30,8 @@ worker.o:handlerinterface.o worker.cpp worker.h
 
 handlerqueue.o:worker.o handlerinterface.o handlerqueue.cpp handlerqueue.h
 
-taskhandler.o:taskinterface.o handlerinterface.o taskhandler.cpp taskhandler.h
+accept.o:handlerinterface.o accept.cpp accept.h
+
+client.o:accept.o client.cpp client.h
+
+epoll.o:client.o epoll.cpp epoll.h

@@ -25,10 +25,9 @@ public:
 	virtual ~HandlerInterface(void);
 
 	virtual void onInitialize(void) = 0;
-	virtual void onHandleMessage(Packet* pPacket) = 0;
-	virtual void onUpdate(void) = 0;
 	virtual void onDestroy(void) = 0;
 
+	virtual void releaseTask(void);		// 放弃掉所有任务
     virtual inline std::string getClassName(void) const {
         return "HandlerInterface";
     }
@@ -36,9 +35,38 @@ protected:
     void doHandler(void);						// Worker 调用执行任务检测
     void acceptTask(TaskInterface* pTask);		// TaskInterface 调用接收任务
 protected:
-	bool m_isInHandlerQueue;
-	TaskInterfaceQueue m_taskQueue;
+	bool m_isInHandlerQueue;			// 标记当前主体对象是否已经在队列中等待Worker处理
+	TaskInterfaceQueue m_taskQueue;		// 当前主体对象需要完成的任务队列，确保任务独占主体的资源
 };// end class HandlerInterface
+
+DEFINE_TASK(TaskInitialize, HandlerInterface, onInitialize)
+DEFINE_TASK(TaskDestroy, HandlerInterface, onDestroy)
+
+//class TaskInitialize : public TaskInterface
+//{
+//public:
+//	explicit TaskInitialize(HandlerInterface* pHandler) : TaskInterface(pHandler){}
+//	virtual ~TaskInitialize(void){}
+//	virtual void doTask(void){
+//		getHandler()->onInitialize();
+//	}
+//    virtual inline std::string getClassName(void) const {
+//        return "TaskInitialize";
+//    }
+//};// end class TaskInitialize
+//
+//class TaskDestroy : public TaskInterface
+//{
+//public:
+//	explicit TaskDestroy(HandlerInterface* pHandler) : TaskInterface(pHandler){}
+//	virtual ~TaskDestroy(void){}
+//	virtual void doTask(void){
+//		getHandler()->onDestroy();
+//	}
+//    virtual inline std::string getClassName(void) const {
+//        return "TaskDestroy";
+//    }
+//};// end class TaskDestroy
 
 NS_HIVENET_END
 

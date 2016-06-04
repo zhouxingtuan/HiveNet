@@ -26,6 +26,7 @@ NS_HIVENET_BEGIN
 
 class Script : public HandlerInterface
 {
+public:
 	friend class ScriptManager;
 public:
     explicit Script(lua_State* pState=NULL);
@@ -33,9 +34,9 @@ public:
 
 	// interface
 	virtual void onInitialize(void);
+	virtual void onDestroy(void);
 	virtual void onHandleMessage(Packet* pPacket);
 	virtual void onUpdate(void);
-	virtual void onDestroy(void);
 
     inline void setInitString(const char* initFile){ m_initString = initFile; }
     inline const std::string& getInitString(void) const { return m_initString; }
@@ -103,6 +104,41 @@ protected:
     UniqueHandle m_uniqueHandle;
     std::string m_initString;
 };//end class Script
+
+DEFINE_TASK(TaskUpdate, Script, onUpdate)
+DEFINE_TASK_PARAM(TaskHandleMessage, Script, onHandleMessage, Packet)
+
+//class TaskUpdate : public TaskInterface
+//{
+//public:
+//	explicit TaskUpdate(Script* pHandler) : TaskInterface(pHandler){}
+//	virtual ~TaskUpdate(void){}
+//	virtual void doTask(void){
+//		(Script*)getHandler()->onUpdate();
+//	}
+//    virtual inline std::string getClassName(void) const {
+//        return "TaskUpdate";
+//    }
+//};// end class TaskUpdate
+//
+//class TaskHandleMessage : public TaskInterface
+//{
+//public:
+//	explicit TaskHandleMessage(Script* pHandler, Packet* pPacket)
+//		: TaskInterface(pHandler), m_pPacket(pPacket){
+//		m_pPacket->retain();
+//	}
+//	virtual ~TaskHandleMessage(void){ m_pPacket->release(); }
+//	virtual void doTask(void){
+//		(Script*)getHandler()->onHandleMessage(m_pPacket);
+//	}
+//	Packet* getPacket(void){ return m_pPacket; }
+//    virtual inline std::string getClassName(void) const {
+//        return "TaskHandleMessage";
+//    }
+//protected:
+//	Packet* m_pPacket;
+//};// end class TaskHandleMessage
 
 NS_HIVENET_END
 

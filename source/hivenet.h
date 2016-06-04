@@ -16,6 +16,8 @@
 #include "taskinterface.h"
 #include "worker.h"
 #include "handlerqueue.h"
-#include "taskhandler.h"
+#include "accept.h"
+#include "client.h"
+#include "epoll.h"
 
 #endif
