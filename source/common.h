@@ -152,7 +152,7 @@ public:
 	UniqueHandle(unsigned int h){ this->handle = h; }
 	UniqueHandle(void) : handle(0) {}
 	virtual ~UniqueHandle(void){}
-	inline void increase(void){ ++this->unique.version; }
+	inline void increase(void){ ++(this->unique.version); }
 	inline void setIndex(unsigned short index){ this->unique.index = index; }
 	inline unsigned short getIndex(void) const { return this->unique.index; }
 	inline unsigned short getVersion(void) const { return this->unique.version; }
@@ -173,7 +173,7 @@ public:
 	LongUniqueHandle(unsigned int h){ this->handle = h; }
 	LongUniqueHandle(void) : handle(0) {}
 	virtual ~LongUniqueHandle(void){}
-	inline void increase(void){ ++this->unique.version; }
+	inline void increase(void){ ++(this->unique.version); }
 	inline void setIndex(unsigned int index){ this->unique.index = index; }
 	inline unsigned int getIndex(void) const { return this->unique.index; }
 	inline unsigned int getVersion(void) const { return this->unique.version; }
