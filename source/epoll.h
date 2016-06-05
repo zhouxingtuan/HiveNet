@@ -77,7 +77,7 @@ inline int epollChange(int epollfd, int fd, void* ptr, unsigned int events=EPOLL
 	return epoll_ctl(epollfd, EPOLL_CTL_MOD, fd, &ev);
 }
 /*--------------------------------------------------------------------*/
-class Epoll : public HandlerInterface
+class Epoll : public RefObject
 {
 public:
 	friend class Accept;
@@ -140,8 +140,6 @@ protected:
 	struct epoll_event m_events[MAX_EPOLL_EVENT];
 	SocketInformation m_socket;
 };// end class Epoll
-
-//DEFINE_TASK_PARAM(TaskRemoveSocket, Epoll, onRemoveSocket, Accept)
 
 NS_HIVENET_END
 

@@ -11,53 +11,80 @@
 
 NS_HIVENET_BEGIN
 
-Accept::Accept(Epoll* pEpoll) : HandlerInterface(), m_pEpoll(pEpoll),
-	m_tempReadPacket(NULL), m_isIdentify(false){
+Accept::Accept(Epoll* pEpoll) : RefObject(), Sync(), m_pEpoll(pEpoll),
+	m_tempReadPacket(NULL), m_isIdentify(false) {
 	memset(&m_socket, 0, sizeof(struct SocketInformation));
 	clearStateOutFlag();
 	m_handlerType = SOCKET_HANDLER_ACCEPT;
 }
 Accept::~Accept(void){
+	releasePacket();
 	SAFE_RELEASE(m_tempReadPacket)
 }
-bool Accept::onInitialize(void){
-	return true;
+void Accept::releasePacket(void){
+	this->lock();
+	for( auto pPacket : m_packetQueue ){
+		pPacket->release();
+	}
+	m_packetQueue.clear();
+	this->unlock();
 }
-bool Accept::onDestroy(void){
-	return true;
+void Accept::receivePacket(Packet* pPacket){
+	pPacket->retain();
+	this->lock();
+	m_packetQueue.push_back(pPacket);
+	this->unlock();
 }
 bool Accept::onReadSocket(void){
 	if( !readSocket() ){
 		removeSocket();
+		return false;
 	}
 	return true;
 }
-bool Accept::onWriteSocket(Packet* pPacket){
-    if( NULL == pPacket ){
-    	m_pEpoll->changeStateIn(this);
-    	return true;
-    }
-	if( !writeSocket(pPacket) ){
-		removeSocket();
+bool Accept::onWriteSocket(void){
+	Packet* pPacket = NULL;
+	this->lock();
+	if( !m_packetQueue.empty() ){
+		pPacket = m_packetQueue.front();
+		pPacket->retain();		// 引用 1
+	}
+	this->unlock();
+	if( NULL == pPacket ){
+		m_pEpoll->changeStateIn(this);
 		return true;
+	}
+	if( !writeSocket(pPacket) ){
+		pPacket->release();		// 释放 1
+		removeSocket();
+		return false;
 	}
 	if( pPacket->isCursorEnd() ){
+		pPacket->release();		// 释放 1
+		// 反向检查队列并移除队末尾的对象
+		bool releasePacketAtEnd = false;
+		this->lock();
+		if( !m_packetQueue.empty() && m_packetQueue.front() == pPacket ){
+			releasePacketAtEnd = true;
+			m_packetQueue.pop_front();
+		}
+		this->unlock();
+		if(releasePacketAtEnd){
+			pPacket->release();	// 对应进入队列时的retain
+		}
 		return true;
 	}
-	return false;	// 没有写完保留任务在队列中，继续写
+	return true;
 }
 void Accept::removeSocket(void){
 	m_pEpoll->changeStateRemove(this);	// 修改epoll中的状态，不再接收数据
-	// 生成一个任务，负责移除epoll中的这个socket对象
-//	TaskRemoveSocket* pTask = new TaskRemoveSocket(m_pEpoll, this);
-//	pTask->commitTask();
 	m_pEpoll->onRemoveSocket(this);
 }
 void Accept::resetData(void){
 	increaseVersion();	// 增加版本
 	closeSocket();	// 关闭套接字
 	SAFE_RELEASE(m_tempReadPacket)
-	releaseTask();	// 取消所有任务的处理
+	releasePacket();	// 取消所有数据包的发送
 }
 void Accept::dispatchPacket(Packet* pPacket){
 	m_pEpoll->receivePacket(getHandle(), pPacket);
@@ -92,7 +119,7 @@ bool Accept::readSocket(void){
     	if( pPacket->isCursorEnd() ){
 			// 派发消息给对应的消息处理器
 			dispatchPacket(pPacket);
-    		pPacket->release();
+    		pPacket->release();		// 对应Packet创建时的retain
 			pPacket = NULL;
     	}
     }else{
@@ -109,7 +136,7 @@ bool Accept::readSocket(void){
             writeLength = std::min( (int)(nread-(recvBufferPtr-recvBuffer)), packetLength );
 			// 创建Packet对象，并将数据写入
 			pPacket = new Packet(packetLength);
-			pPacket->retain();
+			pPacket->retain();	// 如果数据没有全部收到，那么m_tempReadPacket会保持这个retain状态
 			pPacket->write( recvBufferPtr, writeLength );
             recvBufferPtr += writeLength;
             if( pPacket->isCursorEnd() ){

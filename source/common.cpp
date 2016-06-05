@@ -29,6 +29,14 @@ void Thread::cancelThread(void){
 		m_pThread = 0;
 	}
 }
+pthread_t Thread::staticThread(ThreadCallback start_rtn, void *arg){
+	pthread_t pThread;
+	if( pthread_create(&pThread,NULL,start_rtn,arg) ){
+		return 0;
+	}
+	pthread_detach(pThread);
+	return pThread;
+}
 /*--------------------------------------------------------------------*/
 
 NS_HIVENET_END

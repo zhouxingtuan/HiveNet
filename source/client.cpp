@@ -17,13 +17,22 @@ Client::Client(Epoll* pEpoll) : Accept(pEpoll) {
 Client::~Client(void){
 
 }
-bool Client::onInitialize(void){
+void* Client::syncConnectServer(void* pData){
+	Client* ret = (Client*)pData;
+	if( ret->onConnectServer() ){
+		return 0;
+	}
+	return 0;
+}
+bool Client::onConnectServer(void){
 	if( connectServer() ){
 		if( !m_pEpoll->receiveClient(this) ){
 			removeSocket();
+			return false;
 		}
+		return true;
 	}
-	return true;
+	return false;
 }
 bool Client::connectServer(void){
     int fd;

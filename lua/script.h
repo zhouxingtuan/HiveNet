@@ -108,38 +108,6 @@ protected:
 DEFINE_TASK(TaskUpdate, Script, onUpdate)
 DEFINE_TASK_PARAM(TaskHandleMessage, Script, onHandleMessage, Packet)
 
-//class TaskUpdate : public TaskInterface
-//{
-//public:
-//	explicit TaskUpdate(Script* pHandler) : TaskInterface(pHandler){}
-//	virtual ~TaskUpdate(void){}
-//	virtual void doTask(void){
-//		(Script*)getHandler()->onUpdate();
-//	}
-//    virtual inline std::string getClassName(void) const {
-//        return "TaskUpdate";
-//    }
-//};// end class TaskUpdate
-//
-//class TaskHandleMessage : public TaskInterface
-//{
-//public:
-//	explicit TaskHandleMessage(Script* pHandler, Packet* pPacket)
-//		: TaskInterface(pHandler), m_pPacket(pPacket){
-//		m_pPacket->retain();
-//	}
-//	virtual ~TaskHandleMessage(void){ m_pPacket->release(); }
-//	virtual void doTask(void){
-//		(Script*)getHandler()->onHandleMessage(m_pPacket);
-//	}
-//	Packet* getPacket(void){ return m_pPacket; }
-//    virtual inline std::string getClassName(void) const {
-//        return "TaskHandleMessage";
-//    }
-//protected:
-//	Packet* m_pPacket;
-//};// end class TaskHandleMessage
-
 NS_HIVENET_END
 
 #endif

@@ -44,32 +44,6 @@ protected:
 DEFINE_TASK(TaskInitialize, HandlerInterface, onInitialize)
 DEFINE_TASK(TaskDestroy, HandlerInterface, onDestroy)
 
-//class TaskInitialize : public TaskInterface
-//{
-//public:
-//	explicit TaskInitialize(HandlerInterface* pHandler) : TaskInterface(pHandler){}
-//	virtual ~TaskInitialize(void){}
-//	virtual void doTask(void){
-//		getHandler()->onInitialize();
-//	}
-//    virtual inline std::string getClassName(void) const {
-//        return "TaskInitialize";
-//    }
-//};// end class TaskInitialize
-//
-//class TaskDestroy : public TaskInterface
-//{
-//public:
-//	explicit TaskDestroy(HandlerInterface* pHandler) : TaskInterface(pHandler){}
-//	virtual ~TaskDestroy(void){}
-//	virtual void doTask(void){
-//		getHandler()->onDestroy();
-//	}
-//    virtual inline std::string getClassName(void) const {
-//        return "TaskDestroy";
-//    }
-//};// end class TaskDestroy
-
 NS_HIVENET_END
 
 #endif

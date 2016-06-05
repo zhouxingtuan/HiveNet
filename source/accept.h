@@ -9,7 +9,7 @@
 #ifndef __hivenet__accept__
 #define __hivenet__accept__
 
-#include "handlerinterface.h"
+#include "packet.h"
 
 NS_HIVENET_BEGIN
 
@@ -31,19 +31,18 @@ enum SocketHandlerType {
 
 class Epoll;
 
-class Accept : public HandlerInterface
+class Accept : public RefObject, public Sync
 {
 public:
 	friend class Epoll;
 	friend class AcceptManager;
+	typedef std::deque<Packet*> PacketQueue;
 public:
 	explicit Accept(Epoll* pEpoll);
 	virtual ~Accept(void);
 
-	virtual bool onInitialize(void);
-	virtual bool onDestroy(void);
 	virtual bool onReadSocket(void);
-	virtual bool onWriteSocket(Packet* pPacket);
+	virtual bool onWriteSocket(void);
 
 	virtual void removeSocket(void);
 	virtual inline void setSocket(const char* ip, unsigned short port){
@@ -79,18 +78,18 @@ protected:
 	inline void increaseVersion(void){ m_uniqueHandle.increase(); }
 	inline void setIndex(unsigned short index){ m_uniqueHandle.setIndex(index); }
 	void dispatchPacket(Packet* pPacket);
+	void receivePacket(Packet* pPacket);
+	void releasePacket(void);
 protected:
 	SocketInformation m_socket;
+	PacketQueue m_packetQueue;
 	Epoll* m_pEpoll;
 	Packet* m_tempReadPacket;
 	UniqueHandle m_uniqueHandle;
-	volatile bool m_isIdentify;
 	std::atomic_flag m_stateOutFlag;
 	SocketHandlerType m_handlerType;
+	volatile bool m_isIdentify;
 };//end class Accept
-
-DEFINE_TASK(TaskReadSocket, Accept, onReadSocket)
-DEFINE_TASK_PARAM(TaskWriteSocket, Accept, onWriteSocket, Packet)
 
 NS_HIVENET_END
 

@@ -9,7 +9,7 @@
 #include "epoll.h"
 
 NS_HIVENET_BEGIN
-
+/*--------------------------------------------------------------------*/
 AcceptManager::AcceptManager(void) : RefObject(), Sync() {
 
 }
@@ -93,9 +93,9 @@ Accept* AcceptManager::getByHandle(unsigned int handle){
 	}
 	return ret;
 }
-
+/*--------------------------------------------------------------------*/
 static Epoll* g_pEpoll = NULL;
-Epoll::Epoll() : HandlerInterface(), m_pFactory(NULL),
+Epoll::Epoll() : RefObject(), m_pFactory(NULL),
  	m_pAccepts(NULL), m_pClients(NULL), m_curfds(0), m_epollfd(0) {
 	memset(&m_socket, 0, sizeof(struct SocketInformation));
 	m_pAccepts = new AcceptManager();
@@ -169,8 +169,7 @@ bool Epoll::sendAcceptPacket(unsigned int handle, Packet* pPacket){
 		return false;
 	}
 	pPacket->resetCursor();		// 后面的写操作需要重置
-	TaskWriteSocket* writeTask = new TaskWriteSocket(pAccept, pPacket);
-	writeTask->commitTaskSilence();
+	pAccept->receivePacket(pPacket);
 	changeStateOut(pAccept);	// 更改epoll状态，等待可写
 	return true;
 }
@@ -180,8 +179,7 @@ bool Epoll::sendClientPacket(unsigned int handle, Packet* pPacket){
 		return false;
 	}
 	pPacket->resetCursor();		// 后面的写操作需要重置
-	TaskWriteSocket* writeTask = new TaskWriteSocket(pClient, pPacket);
-	writeTask->commitTaskSilence();
+	pClient->receivePacket(pPacket);
 	changeStateOut(pClient);	// 更改epoll状态，等待可写
 	return true;
 }
@@ -189,9 +187,11 @@ unsigned int Epoll::createClient(const char* ip, unsigned short port){
 	Client* pClient = m_pClients->createClient(this);
 	unsigned int handle = pClient->getHandle();
 	pClient->setSocket(ip, port);
-	// 生成连接任务，让线程来处理连接
-	TaskInitialize* pTask = new TaskInitialize(pClient);
-	pTask->commitTask();
+	// 生成连接任务，让线程来处理连接；这样做的原因是，某些连接地址不可到达，这时会占用（挂起）大量时间
+	if( Thread::staticThread(Client::syncConnectServer, pClient) == 0 ){
+		onRemoveSocket(pClient);
+		return INVALID_UNIQUE_HANDLE;
+	}
 	return handle;
 }
 void Epoll::closeClient(unsigned int handle){
@@ -308,11 +308,10 @@ bool Epoll::waitEpoll(void){
             }
         }
         if(pEvent->events & EPOLLIN){
-        	TaskReadSocket* readTask = new TaskReadSocket((Accept*)ptr);
-        	readTask->commitTask();
+        	((Accept*)ptr)->onReadSocket();
         }
         if(pEvent->events & EPOLLOUT){
-        	((Accept*)ptr)->notifyHandlerQueue();
+        	((Accept*)ptr)->onWriteSocket();
             continue;
         }else if(pEvent->events & EPOLLERR){
         	((Accept*)ptr)->removeSocket();

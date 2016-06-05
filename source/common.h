@@ -125,11 +125,16 @@ protected:
 class Thread
 {
 public:
+	typedef void*(*ThreadCallback)(void* pData);
+public:
 	Thread(void) : m_pThread(0){}
 	virtual ~Thread(void){}
 	bool startThread(void);
 	void cancelThread(void);
 	virtual int threadFunction(void) = 0;
+
+	static pthread_t staticThread(ThreadCallback start_rtn, void *arg);
+
 	virtual inline std::string getClassName(void) const {
 		return "Thread";
 	}
@@ -139,6 +144,7 @@ protected:
 	pthread_t m_pThread;
 };
 /*--------------------------------------------------------------------*/
+#define INVALID_UNIQUE_HANDLE 4294967295
 // 唯一性控制结构
 typedef struct UniqueHandle{
 	union{

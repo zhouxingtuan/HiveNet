@@ -19,7 +19,9 @@ public:
 	explicit Client(Epoll* pEpoll);
 	virtual ~Client(void);
 
-	virtual bool onInitialize(void);
+	virtual bool onConnectServer(void);
+
+	static void* syncConnectServer(void* pData);
 
     virtual inline std::string getClassName(void) const {
         return "Client";

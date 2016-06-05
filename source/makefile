@@ -30,7 +30,7 @@ worker.o:handlerinterface.o worker.cpp worker.h
 
 handlerqueue.o:worker.o handlerinterface.o handlerqueue.cpp handlerqueue.h
 
-accept.o:handlerinterface.o accept.cpp accept.h
+accept.o:packet.o accept.cpp accept.h
 
 client.o:accept.o client.cpp client.h
 
