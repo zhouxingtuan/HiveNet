@@ -88,12 +88,12 @@ int Client::threadFunction(void){
 	while(true){
 		if( !tryReadSocket() ){
 			removeSocket();
-			m_pInterface->notifyConnectOut(this);	// 通知外部连接成功
+			m_pInterface->notifyConnectOut(this);	// 通知外部连接退出
 			return 0;
 		}
 		if( !tryWriteSocket() ){
 			removeSocket();
-			m_pInterface->notifyConnectOut(this);	// 通知外部连接成功
+			m_pInterface->notifyConnectOut(this);	// 通知外部连接退出
 			return 0;
 		}
 	};
