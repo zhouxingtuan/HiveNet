@@ -90,9 +90,8 @@ public:
 	static Epoll* createInstance(void);
 	static void destroyInstance(void);
 
-	virtual bool onInitialize(void);
-	virtual bool onDestroy(void);
-	virtual bool onUpdate(void);
+	virtual bool initialize(void);
+	virtual bool update(void);
 
 	virtual bool sendAcceptPacket(unsigned int handle, Packet* pPacket);
 	virtual bool sendClientPacket(unsigned int handle, Packet* pPacket);
@@ -110,7 +109,7 @@ public:
         return "Epoll";
     }
 protected:
-	virtual bool onRemoveSocket(Accept* pAccept);
+	virtual bool tryRemoveSocket(Accept* pAccept);
 	bool receiveClient(Client* pClient);
 	bool receivePacket(unsigned int handle, Packet* pPacket);
 	inline void changeStateOut(Accept* pAccept){

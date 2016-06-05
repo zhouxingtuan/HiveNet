@@ -19,12 +19,12 @@ Client::~Client(void){
 }
 void* Client::syncConnectServer(void* pData){
 	Client* ret = (Client*)pData;
-	if( ret->onConnectServer() ){
+	if( ret->tryConnectServer() ){
 		return 0;
 	}
 	return 0;
 }
-bool Client::onConnectServer(void){
+bool Client::tryConnectServer(void){
 	if( connectServer() ){
 		if( !m_pEpoll->receiveClient(this) ){
 			removeSocket();

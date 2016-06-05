@@ -19,7 +19,7 @@ public:
 	explicit Client(Epoll* pEpoll);
 	virtual ~Client(void);
 
-	virtual bool onConnectServer(void);
+	virtual bool tryConnectServer(void);
 
 	static void* syncConnectServer(void* pData);
 

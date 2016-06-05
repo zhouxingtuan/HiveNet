@@ -41,8 +41,8 @@ public:
 	explicit Accept(Epoll* pEpoll);
 	virtual ~Accept(void);
 
-	virtual bool onReadSocket(void);
-	virtual bool onWriteSocket(void);
+	virtual bool tryReadSocket(void);
+	virtual bool tryWriteSocket(void);
 
 	virtual void removeSocket(void);
 	virtual inline void setSocket(const char* ip, unsigned short port){

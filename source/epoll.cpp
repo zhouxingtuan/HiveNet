@@ -121,7 +121,7 @@ Epoll* Epoll::createInstance(void){
 void Epoll::destroyInstance(void){
     SAFE_RELEASE(g_pEpoll)
 }
-bool Epoll::onInitialize(void){
+bool Epoll::initialize(void){
 	if( 0 == m_socket.port ){
 		fprintf(stderr, "--Epoll::onInitialize socket ip and port is not set yet\n");
 		return true;
@@ -136,17 +136,13 @@ bool Epoll::onInitialize(void){
 	}
 	return true;
 }
-bool Epoll::onDestroy(void){
-	closeListenSocket();
-	return true;
-}
-bool Epoll::onUpdate(void){
+bool Epoll::update(void){
 	if( !waitEpoll() ){
-		return true;
+		return false;
 	}
 	return true;
 }
-bool Epoll::onRemoveSocket(Accept* pAccept){
+bool Epoll::tryRemoveSocket(Accept* pAccept){
 	// 根据对象的类型，分类设置这个对象到idle中等待被使用
 	SocketHandlerType handlerType = pAccept->getSocketHandlerType();
 	if( SOCKET_HANDLER_ACCEPT == handlerType ){
@@ -158,7 +154,7 @@ bool Epoll::onRemoveSocket(Accept* pAccept){
 		pTask->commitTask();
 		m_pClients->idle(pAccept);
 	}else{
-		fprintf(stderr, "--Epoll::onRemoveSocket unknown handler type\n");
+		fprintf(stderr, "--Epoll::tryRemoveSocket unknown handler type\n");
 	}
 	pAccept->resetData();	// 重置对象的数据
 	return true;
@@ -189,7 +185,7 @@ unsigned int Epoll::createClient(const char* ip, unsigned short port){
 	pClient->setSocket(ip, port);
 	// 生成连接任务，让线程来处理连接；这样做的原因是，某些连接地址不可到达，这时会占用（挂起）大量时间
 	if( Thread::staticThread(Client::syncConnectServer, pClient) == 0 ){
-		onRemoveSocket(pClient);
+		tryRemoveSocket(pClient);
 		return INVALID_UNIQUE_HANDLE;
 	}
 	return handle;
@@ -308,10 +304,10 @@ bool Epoll::waitEpoll(void){
             }
         }
         if(pEvent->events & EPOLLIN){
-        	((Accept*)ptr)->onReadSocket();
+        	((Accept*)ptr)->tryReadSocket();
         }
         if(pEvent->events & EPOLLOUT){
-        	((Accept*)ptr)->onWriteSocket();
+        	((Accept*)ptr)->tryWriteSocket();
             continue;
         }else if(pEvent->events & EPOLLERR){
         	((Accept*)ptr)->removeSocket();

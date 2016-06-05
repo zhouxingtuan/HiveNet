@@ -35,14 +35,14 @@ void Accept::receivePacket(Packet* pPacket){
 	m_packetQueue.push_back(pPacket);
 	this->unlock();
 }
-bool Accept::onReadSocket(void){
+bool Accept::tryReadSocket(void){
 	if( !readSocket() ){
 		removeSocket();
 		return false;
 	}
 	return true;
 }
-bool Accept::onWriteSocket(void){
+bool Accept::tryWriteSocket(void){
 	Packet* pPacket = NULL;
 	this->lock();
 	if( !m_packetQueue.empty() ){
@@ -78,7 +78,7 @@ bool Accept::onWriteSocket(void){
 }
 void Accept::removeSocket(void){
 	m_pEpoll->changeStateRemove(this);	// 修改epoll中的状态，不再接收数据
-	m_pEpoll->onRemoveSocket(this);
+	m_pEpoll->tryRemoveSocket(this);
 }
 void Accept::resetData(void){
 	increaseVersion();	// 增加版本
