@@ -41,9 +41,6 @@ public:
 	explicit Accept(Epoll* pEpoll);
 	virtual ~Accept(void);
 
-	virtual bool tryReadSocket(void);
-	virtual bool tryWriteSocket(void);
-
 	virtual void removeSocket(void);
 	virtual inline void setSocket(const char* ip, unsigned short port){
 		strcpy(m_socket.ip, ip);
@@ -70,6 +67,8 @@ public:
         return "Accept";
     }
 protected:
+	virtual bool tryReadSocket(void);
+	virtual bool tryWriteSocket(void);
 	virtual bool readSocket(void);
 	virtual bool writeSocket(Packet* pPacket);
 	virtual void resetData(void);

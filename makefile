@@ -30,8 +30,8 @@ CFLAGS = -O2 -Wall -pthread -lrt $(INCLUDES) -lstdc++ -std=c++11 $(HIVENET_STATI
 
 CC = gcc
 RM = rm -f
-BIN = server
-TARGET = main
+BIN =
+TARGET = hive-server
 
 export LUA_OBJDIR = ${shell pwd}/lua
 export TOLUA_OBJDIR = ${shell pwd}/lua/tolua

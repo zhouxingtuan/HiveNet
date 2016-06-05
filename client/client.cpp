@@ -1,0 +1,284 @@
+//
+// Created by IntelliJ IDEA.
+// User: AppleTree
+// Date: 16/6/5
+// Time: 下午3:59
+// To change this template use File | Settings | File Templates.
+//
+
+#include "client.h"
+
+NS_HIVENET_BEGIN
+
+/*--------------------------------------------------------------------*/
+bool Thread::startThread(void){
+	cancelThread();
+	if( pthread_create(&m_pThread,NULL,staticThreadFunction,this) ){
+		return false;
+	}
+	pthread_detach(m_pThread);
+	return true;
+}
+void* Thread::staticThreadFunction(void* pData){
+	Thread* ret = (Thread*)pData;
+	return (void*)ret->threadFunction();
+}
+void Thread::cancelThread(void){
+	if(m_pThread != 0 ){
+		pthread_cancel( m_pThread );
+		m_pThread = 0;
+	}
+}
+pthread_t Thread::staticThread(ThreadCallback start_rtn, void *arg){
+	pthread_t pThread;
+	if( pthread_create(&pThread,NULL,start_rtn,arg) ){
+		return 0;
+	}
+	pthread_detach(pThread);
+	return pThread;
+}
+/*--------------------------------------------------------------------*/
+Packet::Packet(int bufferSize) : RefObject(),m_pBuffer(NULL),m_cursor(0),m_rwState(PACKET_READ_WRITE) {
+	assert(bufferSize > 0 && "Packet new bufferSize should be > 0");
+	m_pBuffer = new Buffer();	// 是否处理分配内存失败？
+	m_pBuffer->retain();
+	m_pBuffer->reserve(bufferSize);
+}
+Packet::Packet(Buffer* pBuffer) : RefObject(),m_pBuffer(pBuffer),m_cursor(0),m_rwState(PACKET_READ_WRITE) {
+	assert(pBuffer != NULL && "Packet new pBuffer should not be NULL");
+	pBuffer->retain();
+}
+Packet::~Packet(void){
+	SAFE_RELEASE(m_pBuffer)
+}
+/*--------------------------------------------------------------------*/
+Client::Client(void) : RefObject(), Sync(), Thread(), m_tempReadPacket(NULL), m_pInterface(NULL) {
+	memset(&m_socket, 0, sizeof(struct SocketInformation));
+}
+Client::~Client(void){
+	releasePacket();
+	SAFE_RELEASE(m_tempReadPacket)
+}
+void Client::releasePacket(void){
+	this->lock();
+	for( auto pPacket : m_packetQueue ){
+		pPacket->release();
+	}
+	m_packetQueue.clear();
+	this->unlock();
+}
+bool Client::receivePacket(Packet* pPacket){
+	if( 0 == m_socket.fd ){
+		return false;
+	}
+	pPacket->resetCursor();		// 后面的写操作需要重置
+	pPacket->retain();			// 进入队列前引用
+	this->lock();
+	m_packetQueue.push_back(pPacket);
+	this->unlock();
+	return true;
+}
+int Client::threadFunction(void){
+	assert(NULL != m_pInterface && "m_pInterface for Client can not be NULL");
+	if( !connectServer() ){
+		m_pInterface->notifyConnectServerFailed(this);	// 通知外部连接失败
+		return 0;
+	}
+	m_pInterface->notifyConnectServerSuccess(this);	// 通知外部连接成功
+	while(true){
+		if( !tryReadSocket() ){
+			removeSocket();
+			m_pInterface->notifyConnectOut(this);	// 通知外部连接成功
+			return 0;
+		}
+		if( !tryWriteSocket() ){
+			removeSocket();
+			m_pInterface->notifyConnectOut(this);	// 通知外部连接成功
+			return 0;
+		}
+	};
+	return 0;
+}
+void Client::dispatchPacket(Packet* pPacket){
+	m_pInterface->notifyPacketIn(this, pPacket);
+}
+bool Client::tryReadSocket(void){
+	fd_set	fdCheck;
+	timeval	seltime;
+	int		iResult = 0;
+	seltime.tv_sec = 0;
+	seltime.tv_usec = CLIENT_SELECT_FLAG;
+	FD_ZERO( &fdCheck );
+	FD_SET( m_socket.fd, &fdCheck );
+	iResult = select(FD_SETSIZE, &fdCheck, NULL, NULL, &seltime);
+	if( iResult < 0 ){
+		fprintf(stderr,"--Client::tryReadSocket select read state error.\n");
+		return false;
+	}else if( iResult == 0 ) {
+		return true;
+	}else if( FD_ISSET( m_socket.fd, &fdCheck ) ){	//read data
+		if( !readSocket() ){
+			return false;
+		}
+	}
+	return true;
+}
+bool Client::tryWriteSocket(void){
+	fd_set	fdCheck;
+	timeval	seltime;
+	int		iResult = 0;
+	seltime.tv_sec = 0;
+	seltime.tv_usec = CLIENT_SELECT_FLAG;
+	FD_ZERO( &fdCheck );
+	FD_SET( m_socket.fd, &fdCheck );
+	iResult = select(FD_SETSIZE, NULL, &fdCheck, NULL, &seltime);
+	if( iResult < 0){
+		fprintf(stderr,"--Client::tryWriteSocket select write state error.\n");
+		return false;
+	}else if( iResult == 0 ){
+		return true;
+	}else if( FD_ISSET( m_socket.fd, &fdCheck ) ){//write data
+		Packet* pPacket = NULL;
+    	this->lock();
+    	if( !m_packetQueue.empty() ){
+    		pPacket = m_packetQueue.front();
+    		pPacket->retain();		// 引用 1
+    	}
+    	this->unlock();
+    	if( NULL == pPacket ){
+    		return true;
+    	}
+    	if( !writeSocket(pPacket) ){
+    		pPacket->release();		// 释放 1
+    		return false;
+    	}
+    	if( pPacket->isCursorEnd() ){
+    		pPacket->release();		// 释放 1
+    		// 反向检查队列并移除队末尾的对象
+    		bool releasePacketAtEnd = false;
+    		this->lock();
+    		if( !m_packetQueue.empty() && m_packetQueue.front() == pPacket ){
+    			releasePacketAtEnd = true;
+    			m_packetQueue.pop_front();
+    		}
+    		this->unlock();
+    		if(releasePacketAtEnd){
+    			pPacket->release();	// 对应进入队列时的retain
+    		}
+    		return true;
+    	}
+	}
+	return true;
+}
+void Client::removeSocket(void){
+	closeSocket();	// 关闭套接字
+	SAFE_RELEASE(m_tempReadPacket)
+	releasePacket();	// 取消所有数据包的发送
+}
+bool Client::readSocket(void){
+	char recvBuffer[8192];
+    char* recvBufferPtr;
+    int nread;
+    int packetLength;
+    int writeLength;
+    Packet* pPacket;
+    pPacket = m_tempReadPacket;
+    if( pPacket == NULL ){
+        nread = read(m_socket.fd, recvBuffer, 8192);
+    }else{
+        nread = read(m_socket.fd, pPacket->getCursorPtr(), pPacket->getLength()-pPacket->getCursor());
+    }
+    if(nread < 0){
+        switch(errno){
+        case EINTR: return true; // 读数据失败，处理信号中断
+        case EAGAIN:    // 可以下次重新调用
+            return true;
+        default: return false;
+        }
+        return false;
+    }else if(nread == 0){
+        return false;
+    }
+    //check stick message
+    if( NULL != pPacket ){
+    	pPacket->moveCursor(nread);
+    	if( pPacket->isCursorEnd() ){
+			// 派发消息给对应的消息处理器
+			dispatchPacket(pPacket);
+    		pPacket->release();		// 对应Packet创建时的retain
+			pPacket = NULL;
+    	}
+    }else{
+		if( nread < PACKET_HEAD_LENGTH ){
+			return true;
+		}
+		//这里读取的信息很可能包含多条信息，这时候需要解析出来；这几条信息因为太短，在发送时被底层socket合并了
+		recvBufferPtr = recvBuffer;
+        do{
+            packetLength = *(int*)((void*)(recvBufferPtr));
+			if( packetLength < PACKET_HEAD_LENGTH ){
+				break;	// 这里直接将数据丢弃
+			}
+            writeLength = std::min( (int)(nread-(recvBufferPtr-recvBuffer)), packetLength );
+			// 创建Packet对象，并将数据写入
+			pPacket = new Packet(packetLength);
+			pPacket->retain();	// 如果数据没有全部收到，那么m_tempReadPacket会保持这个retain状态
+			pPacket->write( recvBufferPtr, writeLength );
+            recvBufferPtr += writeLength;
+            if( pPacket->isCursorEnd() ){
+                // 派发消息给对应的消息处理器
+				dispatchPacket(pPacket);
+                pPacket->release();
+                pPacket = NULL;
+            }
+            // 如果消息没有全部接收，那么将会放到临时包中等待下一次读数据操作
+        }while(nread-(recvBufferPtr-recvBuffer) > PACKET_HEAD_LENGTH);
+    }
+	m_tempReadPacket = pPacket;
+    return true;
+}
+bool Client::writeSocket(Packet* pPacket){
+    int nwrite;
+    nwrite = write(m_socket.fd, pPacket->getCursorPtr(), pPacket->getLength()-pPacket->getCursor());
+    if(nwrite < 0){
+        switch(errno){
+        case EINTR: return true; // 写数据失败，处理信号中断
+        case EAGAIN:    // 可以下次重新调用
+//            fprintf(stderr, "write EAGAIN capture\n");
+            return true;
+        default: return false;
+        }
+        return false;
+    }
+    pPacket->moveCursor( nwrite );// used
+    return true;
+}
+void Client::closeSocket(void){
+	if( m_socket.fd != 0 ){
+        close( m_socket.fd );
+        m_socket.fd = 0;
+    }
+}
+bool Client::connectServer(void){
+    int fd;
+    struct sockaddr_in servaddr;
+    socklen_t socklen = sizeof(struct sockaddr_in);
+    bzero(&servaddr, socklen);
+    servaddr.sin_family = AF_INET;
+    servaddr.sin_addr.s_addr = inet_addr( m_socket.ip );//htonl(INADDR_ANY);
+    servaddr.sin_port = htons( m_socket.port );
+
+    fd = socket(AF_INET, SOCK_STREAM, 0);
+    if(fd == -1){
+        return false;
+    }
+    if( connect(fd, (struct sockaddr *)&servaddr, socklen) == -1 ){
+        close( fd );
+        return false;
+    }
+    m_socket.fd = fd;
+    return true;
+}
+/*--------------------------------------------------------------------*/
+
+NS_HIVENET_END
