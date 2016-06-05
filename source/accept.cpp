@@ -30,10 +30,12 @@ void Accept::releasePacket(void){
 	this->unlock();
 }
 void Accept::receivePacket(Packet* pPacket){
-	pPacket->retain();
+	pPacket->resetCursor();		// 后面的写操作需要重置
+	pPacket->retain();			// 进入队列前引用
 	this->lock();
 	m_packetQueue.push_back(pPacket);
 	this->unlock();
+	m_pEpoll->changeStateOut(this);	// 更改epoll状态，等待可写
 }
 bool Accept::tryReadSocket(void){
 	if( !readSocket() ){

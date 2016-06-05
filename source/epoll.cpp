@@ -164,9 +164,7 @@ bool Epoll::sendAcceptPacket(unsigned int handle, Packet* pPacket){
 	if( NULL == pAccept ){
 		return false;
 	}
-	pPacket->resetCursor();		// 后面的写操作需要重置
 	pAccept->receivePacket(pPacket);
-	changeStateOut(pAccept);	// 更改epoll状态，等待可写
 	return true;
 }
 bool Epoll::sendClientPacket(unsigned int handle, Packet* pPacket){
@@ -174,9 +172,7 @@ bool Epoll::sendClientPacket(unsigned int handle, Packet* pPacket){
 	if( NULL == pClient ){
 		return false;
 	}
-	pPacket->resetCursor();		// 后面的写操作需要重置
 	pClient->receivePacket(pPacket);
-	changeStateOut(pClient);	// 更改epoll状态，等待可写
 	return true;
 }
 unsigned int Epoll::createClient(const char* ip, unsigned short port){
