@@ -185,6 +185,7 @@ unsigned int Epoll::createClient(const char* ip, unsigned short port){
 	pClient->setSocket(ip, port);
 	// 生成连接任务，让线程来处理连接；这样做的原因是，某些连接地址不可到达，这时会占用（挂起）大量时间
 	if( Thread::staticThread(Client::syncConnectServer, pClient) == 0 ){
+		fprintf(stderr, "--Epoll::createClient Thread::staticThread failed\n");
 		tryRemoveSocket(pClient);
 		return INVALID_UNIQUE_HANDLE;
 	}
