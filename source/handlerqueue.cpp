@@ -12,20 +12,11 @@ NS_HIVENET_BEGIN
 
 static HandlerQueue* g_pHandlerQueue = NULL;
 HandlerQueue::HandlerQueue() : RefObject(), Sync() {
-	pthread_cond_init(&m_cond, NULL);
+
 }
 HandlerQueue::~HandlerQueue(){
-	for( auto pWorker : m_workers ){
-		pWorker->cancelThread();
-		pWorker->release();
-	}
-	m_workers.clear();
-	this->lock();
-	for( auto pHandler : m_queue ){
-		pHandler->release();
-	}
-	m_queue.clear();
-	this->unlock();
+	releaseWorker();
+	releaseHandler();
 	pthread_cond_destroy(&m_cond);
 }
 HandlerQueue* HandlerQueue::getInstance(void){
@@ -39,13 +30,31 @@ HandlerQueue* HandlerQueue::createInstance(void){
 	return g_pHandlerQueue;
 }
 void HandlerQueue::destroyInstance(void){
+	if(NULL != g_pHandlerQueue){
+		g_pHandlerQueue->releaseWorker();
+    	g_pHandlerQueue->releaseHandler();
+	}
     SAFE_RELEASE(g_pHandlerQueue)
 }
-
+void HandlerQueue::releaseHandler(void){
+	for( auto pHandler : m_queue ){
+		pHandler->release();
+	}
+	m_queue.clear();
+}
+void HandlerQueue::releaseWorker(void){
+	for( auto pWorker : m_workers ){
+		pWorker->cancelThread();
+		pWorker->release();
+	}
+	m_workers.clear();
+	this->broadcast();	// wake up workers
+}
 void HandlerQueue::createWorker(int workerNumber){
 	if( m_workers.size() > 0 ){
 		return;
 	}
+	pthread_cond_init(&m_cond, NULL);
 	for(int i=0; i<workerNumber; ++i){
 		Worker* pWorker = new Worker(this);
 		m_workers.push_back(pWorker);

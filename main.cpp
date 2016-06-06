@@ -50,6 +50,7 @@ int main(int argc, char *argv[])
 
 	unsigned int hh = 1024;
 	UniqueHandle h = hh;
+	h.increase();
 	fprintf(stderr, "unsigned int hh is %d  UniqueHandle h is %d index %d version %d\n", hh, h.getHandle(), h.getIndex(), h.getVersion());
 
 	HandlerQueue::getInstance()->createWorker(4);
@@ -63,19 +64,22 @@ int main(int argc, char *argv[])
 	ScriptManager::getInstance()->idle(pScript);
 	pScript = ScriptManager::getInstance()->create();
 	pScript->setInitString("print('Hello World From Lua the second time') require('test')");
-	pScript->onInitialize();
-	pScript->onHandleMessage(p);
-	pScript->onUpdate();
-	pScript->onDestroy();
-
+	TaskInitialize* pInit = new TaskInitialize(pScript);
+	pInit->commitTask();
+	TaskHandleMessage* phm = new TaskHandleMessage(pScript, p);
+	phm->commitTask();
 	TaskUpdate* pUpdate = new TaskUpdate(pScript);
 	pUpdate->commitTask();
+	TaskDestroy* pDestroy = new TaskDestroy(pScript);
+	pDestroy->commitTask();
+
+	p->release();
 
 	sleep(3);
 	HandlerQueue::destroyInstance();
 	ScriptManager::destroyInstance();
 
-	p->release();
+
 
 	return 0;
 }

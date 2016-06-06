@@ -19,6 +19,8 @@ Worker::~Worker(void){
 }
 int Worker::threadFunction(void){
 	HandlerInterface* pHandler;
+	m_pHandlerQueue->retain();
+	this->retain();
 	while(true){
 		m_pHandlerQueue->lock();
 		pHandler = m_pHandlerQueue->nextHandler();		// 临界区
@@ -31,6 +33,8 @@ int Worker::threadFunction(void){
 		pHandler->doHandler();	// 执行任务内容
 		pHandler->release();	// 执行完之后释放掉，对应的是入队时的retain
 	};
+	this->release();
+	m_pHandlerQueue->release();
 	return 0;
 }
 

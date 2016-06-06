@@ -30,12 +30,16 @@ public:
 	static void destroyInstance(void);
 
 	void createWorker(int workerNumber);
-
+	void releaseWorker(void);
+	void releaseHandler(void);
 	inline void signal(void){
 		pthread_cond_signal(&m_cond);
 	}
 	inline void wait(void){
 		pthread_cond_wait(&m_cond, &m_mutex);
+	}
+	inline void broadcast(void){
+		pthread_cond_broadcast(&m_cond);
 	}
     virtual inline std::string getClassName(void) const {
         return "HandlerQueue";

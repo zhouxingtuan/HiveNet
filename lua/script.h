@@ -20,6 +20,7 @@ extern "C" {
 #include "context.h"
 #include "x509.h"
 #include "ssl.h"
+#include "luasql.h"
 }
 
 NS_HIVENET_BEGIN
