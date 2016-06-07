@@ -12,11 +12,11 @@ CFLAGS = -O2 -Wall -pthread -lrt $(INCLUDES) -lstdc++ -std=c++11 $(HIVENET_STATI
 
 CC = gcc
 RM = rm -f
-BIN =
-TARGET = hive-client
+BIN = ../bin
+TARGET = client
 
 $(TARGET): client.o main.o
-	$(CC) -g client.o main.o -o ../$(TARGET) $(CFLAGS)
+	$(CC) -g client.o main.o -o $(BIN)/$(TARGET) $(CFLAGS)
 
 client.o: client.cpp client.h
 	$(CC) -g -c $< -o $@ -O2 -Wall -pthread $(INCLUDES) -lstdc++ -std=c++11 -ldl
@@ -27,4 +27,4 @@ main.o: main.cpp
 clean:
 	-$(RM) client.o
 	-$(RM) main.o
-	-$(RM) ../$(TARGET)
+	-$(RM) $(BIN)/$(TARGET)

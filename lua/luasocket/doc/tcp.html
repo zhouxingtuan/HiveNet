@@ -40,7 +40,7 @@
 
 <!-- socket.tcp +++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 
-<p class=name id=socket.tcp> 
+<p class=name id=bin.socket.tcp>
 socket.<b>tcp()</b>
 </p>
 
@@ -77,7 +77,7 @@ reported by <b><tt>nil</tt></b> followed by a message describing the error.
 </p>
 
 <p class=note>
-Note: calling <a href=socket.html#select><tt>socket.select</tt></a>
+Note: calling <a href=bin.socket.html#select><tt>bin.socket.select</tt></a>
 with   a  server   object   in
 the <tt>recvt</tt>  parameter  before  a   call  to  <tt>accept</tt> does
 <em>not</em> guarantee  <tt>accept</tt> will  return immediately.  Use the <a
@@ -110,7 +110,7 @@ method returns <b><tt>nil</tt></b> followed by an error message.
 </p>
 
 <p class=note>
-Note: The function <a href=socket.html#bind><tt>socket.bind</tt></a> 
+Note: The function <a href=bin.socket.html#bind><tt>bin.socket.bind</tt></a>
 is available and is a shortcut for the creation of server sockets.
 </p>
 
@@ -166,7 +166,7 @@ describing the error. In case of success, the method returns 1.
 </p>
 
 <p class=note>
-Note: The function <a href=socket.html#connect><tt>socket.connect</tt></a> 
+Note: The function <a href=bin.socket.html#connect><tt>bin.socket.connect</tt></a>
 is available and is a shortcut for the creation of client sockets.
 </p>
 
@@ -175,7 +175,7 @@ Note: Starting with LuaSocket 2.0,
 the <a href=#settimeout><tt>settimeout</tt></a>
 method affects the behavior of <tt>connect</tt>, causing it to return 
 with an error in case of a timeout. If that happens, you can still call <a
-href=socket.html#select><tt>socket.select</tt></a> with the socket in the
+href=bin.socket.html#select><tt>bin.socket.select</tt></a> with the socket in the
 <tt>sendt</tt> table. The socket will be writable when the connection is
 established.
 </p>

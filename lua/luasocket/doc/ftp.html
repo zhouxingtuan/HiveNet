@@ -65,7 +65,7 @@ To obtain the <tt>ftp</tt> namespace, run:
 
 <pre class=example>
 -- loads the FTP module and any libraries it requires
-local ftp = require("socket.ftp")
+local ftp = require(&quot;bin.socket.ftp&quot;)
 </pre>
 
 <p>
@@ -141,7 +141,7 @@ authentication. Defaults to "<tt>ftp:anonymous@anonymous.org</tt>";
 pump step function used to pass data from the
 server to the sink. Defaults to the LTN12 <tt>pump.step</tt> function;
 <li><tt>create</tt>: An optional function to be used instead of
-<a href=tcp.html#socket.tcp><tt>socket.tcp</tt></a> when the communications socket is created. 
+<a href=tcp.html#bin.socket.tcp><tt>bin.socket.tcp</tt></a> when the communications socket is created.
 </ul>
 
 <p class=return>
@@ -153,24 +153,24 @@ error.
 
 <pre class=example>
 -- load the ftp support
-local ftp = require("socket.ftp")
+local ftp = require(&quot;bin.socket.ftp&quot;)
 
--- Log as user "anonymous" on server "ftp.tecgraf.puc-rio.br",
--- and get file "lua.tar.gz" from directory "pub/lua" as binary.
-f, e = ftp.get("ftp://ftp.tecgraf.puc-rio.br/pub/lua/lua.tar.gz;type=i")
+-- Log as user &quot;anonymous&quot; on server &quot;ftp.tecgraf.puc-rio.br&quot;,
+-- and get file &quot;lua.tar.gz&quot; from directory &quot;pub/lua&quot; as binary.
+f, e = ftp.get(&quot;ftp://ftp.tecgraf.puc-rio.br/pub/lua/lua.tar.gz;type=i&quot;)
 </pre>
 
 <pre class=example>
 -- load needed modules
-local ftp = require("socket.ftp")
-local ltn12 = require("ltn12")
-local url = require("socket.url")
+local ftp = require(&amp;bin.socketocket.ftp&amp;quot;)
+local ltn12 = require(&amp;quot;ltn12&amp;quot;)
+local url = require(&amp;quot;bin.socket.url&amp;quot;)
 
 -- a function that returns a directory listing
 function nlst(u)
     local t = {}
     local p = url.parse(u)
-    p.command = "nlst"
+    p.command = &amp;quot;nlst&amp;quot;
     p.sink = ltn12.sink.table(t)
     local r, e = ftp.get(p)
     return r and table.concat(t), e
@@ -226,7 +226,7 @@ authentication. Defaults to "<tt>ftp:anonymous@anonymous.org</tt>";
 pump step function used to pass data from the
 server to the sink. Defaults to the LTN12 <tt>pump.step</tt> function;
 <li><tt>create</tt>: An optional function to be used instead of
-<a href=tcp.html#socket.tcp><tt>socket.tcp</tt></a> when the communications socket is created. 
+<a href=tcp.html#bin.socket.tcp><tt>bin.socket.tcp</tt></a> when the communications socket is created.
 </ul>
 
 <p class=return>
@@ -236,30 +236,30 @@ message describing the reason for failure.
 
 <pre class=example>
 -- load the ftp support
-local ftp = require("socket.ftp")
+local ftp = require(&quot;bin.socket.ftp&quot;)
 
--- Log as user "fulano" on server "ftp.example.com",
--- using password "silva", and store a file "README" with contents 
--- "wrong password, of course"
-f, e = ftp.put("ftp://fulano:silva@ftp.example.com/README", 
-    "wrong password, of course")
+-- Log as user &quot;fulano&quot; on server &quot;ftp.example.com&quot;,
+-- using password &quot;silva&quot;, and store a file &quot;README&quot; with contents
+-- &quot;wrong password, of course&quot;
+f, e = ftp.put(&quot;ftp://fulano:silva@ftp.example.com/README&quot;,
+    &quot;wrong password, of course&quot;)
 </pre>
 
 <pre class=example>
 -- load the ftp support
-local ftp = require("socket.ftp")
-local ltn12 = require("ltn12")
+local ftp = require(&quot;bin.socket.ftp&quot;)
+local ltn12 = require(&quot;ltn12&quot;)
 
--- Log as user "fulano" on server "ftp.example.com",
--- using password "silva", and append to the remote file "LOG", sending the
--- contents of the local file "LOCAL-LOG"
+-- Log as user &quot;fulano&quot; on server &quot;ftp.example.com&quot;,
+-- using password &quot;silva&quot;, and append to the remote file &quot;LOG&quot;, sending the
+-- contents of the local file &quot;LOCAL-LOG&quot;
 f, e = ftp.put{
-  host = "ftp.example.com", 
-  user = "fulano",
-  password = "silva",
-  command = "appe",
-  argument = "LOG",
-  source = ltn12.source.file(io.open("LOCAL-LOG", "r"))
+  host = &quot;ftp.example.com&quot;,
+  user = &quot;fulano&quot;,
+  password = &quot;silva&quot;,
+  command = &quot;appe&quot;,
+  argument = &quot;LOG&quot;,
+  source = ltn12.source.file(io.open(&quot;LOCAL-LOG&quot;, &quot;r&quot;))
 }
 </pre>
 

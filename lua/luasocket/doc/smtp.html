@@ -69,7 +69,7 @@ To obtain the <tt>smtp</tt> namespace, run:
 
 <pre class=example>
 -- loads the SMTP module and everything it requires
-local smtp = require("socket.smtp")
+local smtp = require(&quot;bin.socket.smtp&quot;)
 </pre>
 
 <p>
@@ -162,7 +162,7 @@ local machine host name;
 pump step function used to pass data from the
 source to the server. Defaults to the LTN12 <tt>pump.step</tt> function;
 <li><tt>create</tt>: An optional function to be used instead of
-<a href=tcp.html#socket.tcp><tt>socket.tcp</tt></a> when the communications socket is created. 
+<a href=tcp.html#bin.socket.tcp><tt>bin.socket.tcp</tt></a> when the communications socket is created.
 </ul>
 
 <p class=return> 
@@ -243,29 +243,29 @@ and
 
 <pre class=example>
 -- load the smtp support
-local smtp = require("socket.smtp")
+local smtp = require(&quot;bin.socket.smtp&quot;)
 
--- Connects to server "localhost" and sends a message to users
--- "fulano@example.com",  "beltrano@example.com", 
--- and "sicrano@example.com".
--- Note that "fulano" is the primary recipient, "beltrano" receives a
--- carbon copy and neither of them knows that "sicrano" received a blind
+-- Connects to server &quot;localhost&quot; and sends a message to users
+-- &quot;fulano@example.com&quot;,  &quot;beltrano@example.com&quot;,
+-- and &quot;sicrano@example.com&quot;.
+-- Note that &quot;fulano&quot; is the primary recipient, &quot;beltrano&quot; receives a
+-- carbon copy and neither of them knows that &quot;sicrano&quot; received a blind
 -- carbon copy of the message.
-from = "&lt;luasocket@example.com&gt;"
+from = &quot;&amp;lt;luasocket@example.com&amp;gt;&quot;
 
 rcpt = {
-  "&lt;fulano@example.com&gt;",
-  "&lt;beltrano@example.com&gt;",
-  "&lt;sicrano@example.com&gt;"
+  &quot;&amp;lt;fulano@example.com&amp;gt;&quot;,
+  &quot;&amp;lt;beltrano@example.com&amp;gt;&quot;,
+  &quot;&amp;lt;sicrano@example.com&amp;gt;&quot;
 }
 
 mesgt = {
   headers = {
-    to = "Fulano da Silva &lt;fulano@example.com&gt;",
-    cc = '"Beltrano F. Nunes" &lt;beltrano@example.com&gt;',
-    subject = "My first message"
+    to = &quot;Fulano da Silva &amp;lt;fulano@example.com&amp;gt;&quot;,
+    cc = &apos;&quot;Beltrano F. Nunes&quot; &amp;lt;beltrano@example.com&amp;gt;&apos;,
+    subject = &quot;My first message&quot;
   },
-  body = "I hope this works. If it does, I can send you another 1000 copies."
+  body = &quot;I hope this works. If it does, I can send you another 1000 copies.&quot;
 }
 
 r, e = smtp.send{
@@ -333,61 +333,61 @@ as listed in the introduction.  </p>
 
 <pre class=example>
 -- load the smtp support and its friends
-local smtp = require("socket.smtp")
-local mime = require("mime")
-local ltn12 = require("ltn12")
+local smtp = require(&quot;bin.socket.smtp&quot;)
+local mime = require(&quot;mime&quot;)
+local ltn12 = require(&quot;ltn12&quot;)
 
--- creates a source to send a message with two parts. The first part is 
+-- creates a source to send a message with two parts. The first part is
 -- plain text, the second part is a PNG image, encoded as base64.
 source = smtp.message{
   headers = {
-     -- Remember that headers are *ignored* by smtp.send. 
-     from = "Sicrano de Oliveira &lt;sicrano@example.com&gt;",
-     to = "Fulano da Silva &lt;fulano@example.com&gt;",
-     subject = "Here is a message with attachments"
+     -- Remember that headers are *ignored* by smtp.send.
+     from = &quot;Sicrano de Oliveira &amp;lt;sicrano@example.com&amp;gt;&quot;,
+     to = &quot;Fulano da Silva &amp;lt;fulano@example.com&amp;gt;&quot;,
+     subject = &quot;Here is a message with attachments&quot;
   },
   body = {
-    preamble = "If your client doesn't understand attachments, \r\n" ..
-               "it will still display the preamble and the epilogue.\r\n" ..
-               "Preamble will probably appear even in a MIME enabled client.",
+    preamble = &quot;If your client doesn&apos;t understand attachments, \r\n&quot; ..
+               &quot;it will still display the preamble and the epilogue.\r\n&quot; ..
+               &quot;Preamble will probably appear even in a MIME enabled client.&quot;,
     -- first part: no headers means plain text, us-ascii.
     -- The mime.eol low-level filter normalizes end-of-line markers.
-    [1] = { 
+    [1] = {
       body = mime.eol(0, [[
-        Lines in a message body should always end with CRLF. 
-        The smtp module will *NOT* perform translation. However, the 
+        Lines in a message body should always end with CRLF.
+        The smtp module will *NOT* perform translation. However, the
         send function *DOES* perform SMTP stuffing, whereas the message
         function does *NOT*.
       ]])
     },
-    -- second part: headers describe content to be a png image, 
+    -- second part: headers describe content to be a png image,
     -- sent under the base64 transfer content encoding.
-    -- notice that nothing happens until the message is actually sent. 
-    -- small chunks are loaded into memory right before transmission and 
+    -- notice that nothing happens until the message is actually sent.
+    -- small chunks are loaded into memory right before transmission and
     -- translation happens on the fly.
-    [2] = { 
+    [2] = {
       headers = {
-        ["content-type"] = 'image/png; name="image.png"',
-        ["content-disposition"] = 'attachment; filename="image.png"',
-        ["content-description"] = 'a beautiful image',
-        ["content-transfer-encoding"] = "BASE64"
+        [&quot;content-type&quot;] = &apos;image/png; name=&quot;image.png&quot;&apos;,
+        [&quot;content-disposition&quot;] = &apos;attachment; filename=&quot;image.png&quot;&apos;,
+        [&quot;content-description&quot;] = &apos;a beautiful image&apos;,
+        [&quot;content-transfer-encoding&quot;] = &quot;BASE64&quot;
       },
       body = ltn12.source.chain(
-        ltn12.source.file(io.open("image.png", "rb")),
+        ltn12.source.file(io.open(&quot;image.png&quot;, &quot;rb&quot;)),
         ltn12.filter.chain(
-          mime.encode("base64"),
+          mime.encode(&quot;base64&quot;),
           mime.wrap()
         )
       )
     },
-    epilogue = "This might also show up, but after the attachments"
+    epilogue = &quot;This might also show up, but after the attachments&quot;
   }
 }
 
 -- finally send it
 r, e = smtp.send{
-    from = "&lt;sicrano@example.com&gt;",
-    rcpt = "&lt;fulano@example.com&gt;",
+    from = &quot;&amp;lt;sicrano@example.com&amp;gt;&quot;,
+    rcpt = &quot;&amp;lt;fulano@example.com&amp;gt;&quot;,
     source = source,
 }
 </pre>

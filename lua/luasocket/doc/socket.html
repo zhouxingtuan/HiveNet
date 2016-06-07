@@ -123,16 +123,16 @@ implementation of protocols in LuaSocket:
 </p>
 
 <pre class=example>
-foo = socket.protect(function()
+foo = bin.socket.protect(function()
     -- connect somewhere
-    local c = socket.try(socket.connect("somewhere", 42))
-    -- create a try function that closes 'c' on error
-    local try = socket.newtry(function() c:close() end)
-    -- do everything reassured c will be closed 
-    try(c:send("hello there?\r\n"))
+    local c = bin.socket.try(bin.socket.connect(&amp;amp;amp;quot;somewhere&amp;amp;amp;quot;, 42))
+    -- create a try function that closes &amp;amp;amp;apos;c&amp;amp;amp;apos; on error
+    local try = bin.socket.newtry(function() c:close() end)
+    -- do everything reassured c will be closed
+    try(c:send(&amp;amp;amp;quot;hello there?\r\n&amp;amp;amp;quot;))
     local answer = try(c:receive())
     ...
-    try(c:send("good bye\r\n"))
+    try(c:send(&amp;amp;amp;quot;good bye\r\n&amp;amp;amp;quot;))
     c:close()
 end)
 </pre>
@@ -274,7 +274,7 @@ Note: This function is useful to avoid creation of dummy variables:
 
 <pre class=example>
 -- get the status code and separator from SMTP server reply 
-local code, sep = socket.skip(2, string.find(line, "^(%d%d%d)(.?)"))
+local code, sep = bin.socket.skip(2, string.find(line, &quot;^(%d%d%d)(.?)&quot;))
 </pre>
 
 <!-- sleep ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -336,9 +336,9 @@ to get meaningful values.
 </p>
 
 <pre class=example>
-t = socket.gettime()
+t = bin.socket.gettime()
 -- do stuff
-print(socket.gettime() - t .. " seconds elapsed")
+print(bin.socket.gettime() - t .. &amp;quot; seconds elapsed&amp;quot;)
 </pre>
 
 <!-- try ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -366,7 +366,7 @@ The function returns <tt>ret</tt><sub>1</sub> to <tt>ret</tt><sub>N</sub> if
 
 <pre class=example>
 -- connects or throws an exception with the appropriate error message
-c = socket.try(socket.connect("localhost", 80))
+c = bin.socket.try(bin.socket.connect(&amp;quot;localhost&amp;quot;, 80))
 </pre>
 
 <!-- version ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->

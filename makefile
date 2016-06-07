@@ -33,8 +33,8 @@ CFLAGS = -O2 -Wall -pthread -lrt $(INCLUDES) -lstdc++ -std=c++11 $(HIVENET_STATI
 
 CC = gcc
 RM = rm -f
-BIN =
-TARGET = hive-server
+BIN = bin
+TARGET = server
 
 export LUA_OBJDIR = ${shell pwd}/lua
 export TOLUA_OBJDIR = ${shell pwd}/lua/tolua
@@ -48,7 +48,7 @@ $(TARGET): $(LUA_OBJDIR) $(TOLUA_OBJDIR) $(HIVENET_OBJDIR) main.o
 	$(MAKE) -C lua/tolua
 	$(MAKE) -C lua
 	$(MAKE) -C source
-	$(CC) -g $(LUA_OBJDIR)/*.o $(TOLUA_OBJDIR)/*.o $(HIVENET_OBJDIR)/*.o main.o -o $(TARGET) $(CFLAGS)
+	$(CC) -g $(LUA_OBJDIR)/*.o $(TOLUA_OBJDIR)/*.o $(HIVENET_OBJDIR)/*.o main.o -o $(BIN)/$(TARGET) $(CFLAGS)
 
 main.o: main.cpp
 	$(CC) -g -c $< -o $@ -O2 -Wall -pthread $(INCLUDES) -lstdc++ -std=c++11 -ldl
@@ -58,7 +58,7 @@ clean:
 	-$(RM) $(LUA_OBJDIR)/*.o
 	-$(RM) $(TOLUA_OBJDIR)/*.o
 	-$(RM) $(HIVENET_OBJDIR)/*.o
-	-$(RM) $(TARGET)
+	-$(RM) $(BIN)/$(TARGET)
 	-$(RM) main.o
 
 

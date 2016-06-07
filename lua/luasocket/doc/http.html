@@ -62,7 +62,7 @@ To obtain the <tt>http</tt> namespace, run:
 
 <pre class=example>
 -- loads the HTTP module and any libraries it requires
-local http = require("socket.http")
+local http = require(&quot;bin.socket.http&quot;)
 </pre>
 
 <p>
@@ -181,7 +181,7 @@ Defaults to the LTN12 <tt>pump.step</tt> function.
 <li><tt>redirect</tt>: Set to <tt><b>false</b></tt> to prevent the 
 function from  automatically following 301 or 302 server redirect messages; 
 <li><tt>create</tt>: An optional function to be used instead of
-<a href=tcp.html#socket.tcp><tt>socket.tcp</tt></a> when the communications socket is created. 
+<a href=tcp.html#bin.socket.tcp><tt>bin.socket.tcp</tt></a> when the communications socket is created.
 </ul>
 
 <p class=return>
@@ -209,28 +209,28 @@ Here are a few examples with the simple interface:
 
 <pre class=example>
 -- load the http module
-local io = require("io")
-local http = require("socket.http")
-local ltn12 = require("ltn12")
+local io = require(&quot;io&quot;)
+local http = require(&quot;bin.socket.http&quot;)
+local ltn12 = require(&quot;ltn12&quot;)
 
--- connect to server "www.cs.princeton.edu" and retrieves this manual
--- file from "~diego/professional/luasocket/http.html" and print it to stdout
-http.request{ 
-    url = "http://www.cs.princeton.edu/~diego/professional/luasocket/http.html", 
+-- connect to server &quot;www.cs.princeton.edu&quot; and retrieves this manual
+-- file from &quot;~diego/professional/luasocket/http.html&quot; and print it to stdout
+http.request{
+    url = &quot;http://www.cs.princeton.edu/~diego/professional/luasocket/http.html&quot;,
     sink = ltn12.sink.file(io.stdout)
 }
 
--- connect to server "www.example.com" and tries to retrieve
--- "/private/index.html". Fails because authentication is needed.
-b, c, h = http.request("http://www.example.com/private/index.html")
--- b returns some useless page telling about the denied access, 
+-- connect to server &quot;www.example.com&quot; and tries to retrieve
+-- &quot;/private/index.html&quot;. Fails because authentication is needed.
+b, c, h = http.request(&quot;http://www.example.com/private/index.html&quot;)
+-- b returns some useless page telling about the denied access,
 -- h returns authentication information
 -- and c returns with value 401 (Authentication Required)
 
--- tries to connect to server "wrong.host" to retrieve "/"
+-- tries to connect to server &quot;wrong.host&quot; to retrieve &quot;/&quot;
 -- and fails because the host does not exist.
-r, e = http.request("http://wrong.host/")
--- r is nil, and e returns with value "host not found"
+r, e = http.request(&quot;http://wrong.host/&quot;)
+-- r is nil, and e returns with value &quot;host not found&quot;
 </pre>
 
 <p class=description>
@@ -239,23 +239,23 @@ And here is an example using the generic interface:
 
 <pre class=example>
 -- load the http module
-http = require("socket.http")
+http = require(&quot;bin.socket.http&quot;)
 
 -- Requests information about a document, without downloading it.
 -- Useful, for example, if you want to display a download gauge and need
 -- to know the size of the document in advance
 r, c, h = http.request {
-  method = "HEAD",
-  url = "http://www.tecgraf.puc-rio.br/~diego"
+  method = &quot;HEAD&quot;,
+  url = &quot;http://www.tecgraf.puc-rio.br/~diego&quot;
 }
 -- r is 1, c is 200, and h would return the following headers:
 -- h = {
---   date = "Tue, 18 Sep 2001 20:42:21 GMT",
---   server = "Apache/1.3.12 (Unix)  (Red Hat/Linux)",
---   ["last-modified"] = "Wed, 05 Sep 2001 06:11:20 GMT",
---   ["content-length"] = 15652,
---   ["connection"] = "close",
---   ["content-Type"] = "text/html"
+--   date = &quot;Tue, 18 Sep 2001 20:42:21 GMT&quot;,
+--   server = &quot;Apache/1.3.12 (Unix)  (Red Hat/Linux)&quot;,
+--   [&quot;last-modified&quot;] = &quot;Wed, 05 Sep 2001 06:11:20 GMT&quot;,
+--   [&quot;content-length&quot;] = 15652,
+--   [&quot;connection&quot;] = &quot;close&quot;,
+--   [&quot;content-Type&quot;] = &quot;text/html&quot;
 -- }
 </pre>
 
@@ -292,19 +292,19 @@ authentication is required.
 
 <pre class=example>
 -- load required modules
-http = require("socket.http")
-mime = require("mime")
+http = require(&quot;bin.socket.http&quot;)
+mime = require(&quot;mime&quot;)
 
--- Connect to server "www.example.com" and tries to retrieve
--- "/private/index.html", using the provided name and password to
+-- Connect to server &quot;www.example.com&quot; and tries to retrieve
+-- &quot;/private/index.html&quot;, using the provided name and password to
 -- authenticate the request
-b, c, h = http.request("http://fulano:silva@www.example.com/private/index.html")
+b, c, h = http.request(&quot;http://fulano:silva@www.example.com/private/index.html&quot;)
 
 -- Alternatively, one could fill the appropriate header and authenticate
 -- the request directly.
 r, c = http.request {
-  url = "http://www.example.com/private/index.html",
-  headers = { authentication = "Basic " .. (mime.b64("fulano:silva")) }
+  url = &quot;http://www.example.com/private/index.html&quot;,
+  headers = { authentication = &quot;Basic &quot; .. (mime.b64(&quot;fulano:silva&quot;)) }
 }
 </pre>
 
