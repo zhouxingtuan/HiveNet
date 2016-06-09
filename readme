@@ -13,3 +13,4 @@
 （1）Luajit代替Lua
 （2）LuaSocket用于发起/监听http连接
 （3）LuaSql模块用于与MySQL数据库的通信
+（4）LuaHiredis模块用于与redis数据库的通信
