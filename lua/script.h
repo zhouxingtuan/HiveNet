@@ -10,6 +10,8 @@
 #define __hivenet__script__
 
 #include "handlerinterface.h"
+#include "uniquemanager.h"
+#include "epoll.h"
 
 #include "lua.hpp"
 #include "tolua++.h"
@@ -26,27 +28,41 @@ extern "C" {
 
 NS_HIVENET_BEGIN
 
-class Script : public HandlerInterface
+#define UNIQUE_HANDLER_SCRIPT 2
+
+class Script : public HandlerInterface, public EpollTaskFactory
 {
 public:
 	friend class ScriptManager;
 public:
-    explicit Script(lua_State* pState=NULL);
+    Script(unique_char uniqueType);
     virtual ~Script( void );
 
-	// interface
+	static Unique* CreateFunction(unique_char uniqueType){
+		return new Script(uniqueType);
+	}
+
+	// handler interface
 	virtual bool onInitialize(void);
 	virtual bool onDestroy(void);
-	virtual bool onHandleMessage(Packet* pPacket);
+	virtual bool onHandleMessage(unique_long handle, Packet* pPacket);
 	virtual bool onUpdate(void);
+	virtual bool onAcceptIn(unique_long handle);
+	virtual bool onAcceptOut(unique_long handle);
+	virtual bool onClientIn(unique_long handle);
+	virtual bool onClientOut(unique_long handle);
 
+	// epoll factory interface
+	virtual TaskInterface* createAcceptIn(unique_long handle);
+	virtual TaskInterface* createAcceptOut(unique_long handle);
+	virtual TaskInterface* createClientIn(unique_long handle);
+	virtual TaskInterface* createClientOut(unique_long handle);
+	virtual TaskInterface* createPacketIn(unique_long handle, Packet* pPacket);
+
+	virtual void setState(lua_State* pState);
+	inline lua_State * getState( void ) { return m_pState; }
     inline void setInitString(const char* initFile){ m_initString = initFile; }
     inline const std::string& getInitString(void) const { return m_initString; }
-	inline lua_State * getState( void ) { return m_pState; }
-	inline UniqueHandle getUniqueHandle(void) const { return m_uniqueHandle; }
-	inline unsigned short getIndex(void) const { return m_uniqueHandle.getIndex(); }
-	inline unsigned short getVersion(void) const { return m_uniqueHandle.getVersion(); }
-	inline unsigned int getHandle(void) const { return m_uniqueHandle.getHandle(); }
 	inline bool executeFile( const char * script_file_path ){
 		if( luaL_loadfile(m_pState, script_file_path ) == 0 ){
 			if( lua_resume( m_pState, 0 ) == 0 ){
@@ -71,14 +87,27 @@ public:
         }
     }
 	// 定制C++调用Lua的全局函数
+	inline void callGlobalFunction(const char * function_name, unique_long handle, void* ptr, const char* class_name){
+		lua_getglobal(m_pState, function_name);
+		tolua_pushnumber(m_pState,(lua_Number)handle);
+		tolua_pushusertype(m_pState, (void*)ptr, class_name);
+		luaCall(2);
+		lua_settop(m_pState, 0);
+	}
 	inline void callGlobalFunction(const char * function_name, void* ptr, const char* class_name){
-		lua_getglobal( m_pState, function_name );
+		lua_getglobal(m_pState, function_name);
 		tolua_pushusertype(m_pState, (void*)ptr, class_name);
 		luaCall(1);
 		lua_settop(m_pState, 0);
 	}
+	inline void callGlobalFunction(const char * function_name, unique_long handle){
+		lua_getglobal(m_pState, function_name);
+		tolua_pushnumber(m_pState,(lua_Number)handle);
+		luaCall(1);
+		lua_settop(m_pState, 0);
+	}
     inline void callGlobalFunction(const char * function_name){
-        lua_getglobal( m_pState, function_name );
+        lua_getglobal(m_pState, function_name);
         luaCall(0);
         lua_settop(m_pState, 0);
     }
@@ -87,8 +116,6 @@ public:
     }
 protected:
 	// 保护函数，被ScriptManager调用
-	inline void increaseVersion(void){ m_uniqueHandle.increase(); }
-	inline void setIndex(unsigned short index){ m_uniqueHandle.setIndex(index); }
 	inline void setMaster(Script* pMaster){
 		SAFE_RELEASE(m_pMaster)
 		m_pMaster = pMaster;
@@ -103,12 +130,15 @@ protected:
 protected:
 	lua_State* m_pState;
     Script* m_pMaster;
-    UniqueHandle m_uniqueHandle;
     std::string m_initString;
 };//end class Script
 
 DEFINE_TASK(TaskUpdate, Script, onUpdate)
-DEFINE_TASK_PARAM(TaskHandleMessage, Script, onHandleMessage, Packet)
+DEFINE_TASK_LONG(TaskAcceptIn, Script, onAcceptIn, unique_long)
+DEFINE_TASK_LONG(TaskAcceptOut, Script, onAcceptOut, unique_long)
+DEFINE_TASK_LONG(TaskClientIn, Script, onClientIn, unique_long)
+DEFINE_TASK_LONG(TaskClientOut, Script, onClientOut, unique_long)
+DEFINE_TASK_PACKET(TaskHandleMessage, Script, onHandleMessage, unique_long, Packet)
 
 NS_HIVENET_END
 

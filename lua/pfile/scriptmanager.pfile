@@ -1,6 +1,6 @@
 
 
-class ScriptManager : public RefObject, public Sync
+class ScriptManager : public RefObject
 {
 	static ScriptManager* getInstance(void);
 	static ScriptManager* createInstance(void);

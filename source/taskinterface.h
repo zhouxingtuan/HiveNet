@@ -44,20 +44,36 @@ public:\
 	}\
 };
 
-#define DEFINE_TASK_PARAM(_NAME_, _HANDLER_, _FUNCTION_, _PARAM_)\
+#define DEFINE_TASK_LONG(_NAME_, _HANDLER_, _FUNCTION_, _LONG_)\
 class _NAME_ : public TaskInterface\
 {\
 public:\
-	explicit _NAME_(_HANDLER_* pHandler, _PARAM_* p##_PARAM_)\
-		: TaskInterface(pHandler), m_p##_PARAM_(p##_PARAM_){\
-		SAFE_RETAIN(m_p##_PARAM_)\
+	explicit _NAME_(_HANDLER_* pHandler, _LONG_ num)\
+		: TaskInterface(pHandler), m_##_LONG_(num){\
 	}\
-	virtual ~_NAME_(void){ SAFE_RELEASE(m_p##_PARAM_); }\
+	virtual ~_NAME_(void){ }\
 	virtual bool doTask(void){\
-		return ((_HANDLER_*)getHandler())->_FUNCTION_(m_p##_PARAM_);\
+		return ((_HANDLER_*)getHandler())->_FUNCTION_(m_##_LONG_);\
 	}\
 protected:\
-	_PARAM_* m_p##_PARAM_;\
+	_LONG_ m_##_LONG_;\
+};
+
+#define DEFINE_TASK_PACKET(_NAME_, _HANDLER_, _FUNCTION_, _LONG_, _PACKET_)\
+class _NAME_ : public TaskInterface\
+{\
+public:\
+	explicit _NAME_(_HANDLER_* pHandler, _LONG_ num, _PACKET_* ptr)\
+		: TaskInterface(pHandler), m_##_LONG_(num), m_p##_PACKET_(ptr){\
+		SAFE_RETAIN(m_p##_PACKET_)\
+	}\
+	virtual ~_NAME_(void){ SAFE_RELEASE(m_p##_PACKET_); }\
+	virtual bool doTask(void){\
+		return ((_HANDLER_*)getHandler())->_FUNCTION_(m_##_LONG_, m_p##_PACKET_);\
+	}\
+protected:\
+	_LONG_ m_##_LONG_;\
+	_PACKET_* m_p##_PACKET_;\
 };
 
 NS_HIVENET_END

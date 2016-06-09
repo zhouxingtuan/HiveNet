@@ -11,11 +11,10 @@
 
 NS_HIVENET_BEGIN
 
-Accept::Accept(Epoll* pEpoll) : RefObject(), Sync(), m_pEpoll(pEpoll),
+Accept::Accept(unique_char uniqueType) : Unique(uniqueType), Sync(), m_pEpoll(NULL),
 	m_tempReadPacket(NULL), m_isIdentify(false) {
 	memset(&m_socket, 0, sizeof(struct SocketInformation));
 	clearStateOutFlag();
-	m_handlerType = SOCKET_HANDLER_ACCEPT;
 }
 Accept::~Accept(void){
 	releasePacket();
@@ -83,7 +82,6 @@ void Accept::removeSocket(void){
 	m_pEpoll->tryRemoveSocket(this);
 }
 void Accept::resetData(void){
-	increaseVersion();	// 增加版本
 	closeSocket();	// 关闭套接字
 	SAFE_RELEASE(m_tempReadPacket)
 	releasePacket();	// 取消所有数据包的发送

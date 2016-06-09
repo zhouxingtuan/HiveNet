@@ -144,49 +144,58 @@ protected:
 	pthread_t m_pThread;
 };
 /*--------------------------------------------------------------------*/
-#define INVALID_UNIQUE_HANDLE 4294967295
+#define INVALID_UNIQUE_HANDLE -1
+typedef long int 		unique_long;
+typedef unsigned int 	unique_int;
+typedef unsigned short 	unique_short;
+typedef unsigned char 	unique_char;
 // 唯一性控制结构
 typedef struct UniqueHandle{
 	union{
 		struct{
-			unsigned short index;
-			unsigned short version;
+			unique_int 		index;
+			unique_short 	version;
+			unique_char 	type;
+			unique_char 	reserve;
 		}unique;
-		unsigned int handle;
+		unique_long handle;
 	};
 public:
-	UniqueHandle(unsigned int h){ this->handle = h; }
+	UniqueHandle(unique_long h){ this->handle = h; }
 	UniqueHandle(void) : handle(0) {}
 	virtual ~UniqueHandle(void){}
+
+	inline void setType(unique_char type){ this->unique.type = type; }
+	inline unique_char getType(void) const { return this->unique.type; }
+	inline void setIndex(unique_int index){ this->unique.index = index; }
+	inline unique_int getIndex(void) const { return this->unique.index; }
 	inline void increase(void){ ++(this->unique.version); }
-	inline void setIndex(unsigned short index){ this->unique.index = index; }
-	inline unsigned short getIndex(void) const { return this->unique.index; }
-	inline unsigned short getVersion(void) const { return this->unique.version; }
-	inline unsigned int getHandle(void) const { return this->handle; }
-	inline UniqueHandle& operator=(unsigned int h){ this->handle = h; return *this; }
+	inline unique_short getVersion(void) const { return this->unique.version; }
+	inline unique_long getHandle(void) const { return this->handle; }
+	inline UniqueHandle& operator=(unique_long h){ this->handle = h; return *this; }
 } UniqueHandle;
 
-// 64位长度，唯一性控制结构
-typedef struct LongUniqueHandle{
-	union{
-		struct{
-			unsigned int index;
-			unsigned int version;
-		}unique;
-		unsigned long long handle;
-	};
+class Unique : public RefObject
+{
 public:
-	LongUniqueHandle(unsigned int h){ this->handle = h; }
-	LongUniqueHandle(void) : handle(0) {}
-	virtual ~LongUniqueHandle(void){}
-	inline void increase(void){ ++(this->unique.version); }
-	inline void setIndex(unsigned int index){ this->unique.index = index; }
-	inline unsigned int getIndex(void) const { return this->unique.index; }
-	inline unsigned int getVersion(void) const { return this->unique.version; }
-	inline unsigned long long getHandle(void) const { return this->handle; }
-	inline LongUniqueHandle& operator=(unsigned long long h){ this->handle = h; return *this; }
-} LongUniqueHandle;
+	friend class UniqueManager;
+public:
+	explicit Unique(unique_char uniqueType) : RefObject() {
+		m_uniqueHandle.setType(uniqueType);
+	}
+	virtual ~Unique(void){}
 
+	virtual inline unique_int getIndex(void) const { return m_uniqueHandle.getIndex(); }
+	virtual inline unique_short getVersion(void) const { return m_uniqueHandle.getVersion(); }
+	virtual inline unique_long getHandle(void) const { return m_uniqueHandle.getHandle(); }
+	virtual inline unique_char getType(void) const { return m_uniqueHandle.getType(); }
+protected:
+	virtual inline UniqueHandle getUniqueHandle(void) const { return m_uniqueHandle; }
+	inline void increaseVersion(void){ m_uniqueHandle.increase(); }
+	inline void setIndex(unique_int index){ m_uniqueHandle.setIndex(index); }
+protected:
+	UniqueHandle m_uniqueHandle;
+};
 
 NS_HIVENET_END
 

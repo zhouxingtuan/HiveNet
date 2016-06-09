@@ -23,23 +23,23 @@ struct SocketInformation{
     unsigned short port;
 };
 
-enum SocketHandlerType {
-	SOCKET_HANDLER_NULL = 0,
-	SOCKET_HANDLER_ACCEPT = 1,
-	SOCKET_HANDLER_CLIENT = 2,
-};
+#define UNIQUE_HANDLER_ACCEPT 0
+#define UNIQUE_HANDLER_CLIENT 1
 
 class Epoll;
 
-class Accept : public RefObject, public Sync
+class Accept : public Unique, public Sync
 {
 public:
 	friend class Epoll;
-	friend class AcceptManager;
 	typedef std::deque<Packet*> PacketQueue;
 public:
-	explicit Accept(Epoll* pEpoll);
+	explicit Accept(unique_char uniqueType);
 	virtual ~Accept(void);
+
+	static Unique* CreateFunction(unique_char uniqueType){
+		return new Accept(uniqueType);
+	}
 
 	virtual void removeSocket(void);
 	virtual inline void setSocket(const char* ip, unsigned short port){
@@ -57,12 +57,10 @@ public:
 			return MAX_LENGTH_NOT_IDENTIFY;
 		}
 	}
-	inline SocketHandlerType getSocketHandlerType(void) const { return m_handlerType; }
+	inline void setEpoll(Epoll* pEpoll){ m_pEpoll = pEpoll; }
+	inline Epoll* getEpoll(void) { return m_pEpoll; }
     inline bool triggerStateOutFlag(void) { return !m_stateOutFlag.test_and_set(); }
     inline void clearStateOutFlag(void) { m_stateOutFlag.clear(); }
-	inline unsigned short getIndex(void) const { return m_uniqueHandle.getIndex(); }
-	inline unsigned short getVersion(void) const { return m_uniqueHandle.getVersion(); }
-	inline unsigned int getHandle(void) const { return m_uniqueHandle.getHandle(); }
     virtual inline std::string getClassName(void) const {
         return "Accept";
     }
@@ -73,9 +71,6 @@ protected:
 	virtual bool writeSocket(Packet* pPacket);
 	virtual void resetData(void);
 	virtual void closeSocket(void);
-	// 保护函数，被ScriptManager调用
-	inline void increaseVersion(void){ m_uniqueHandle.increase(); }
-	inline void setIndex(unsigned short index){ m_uniqueHandle.setIndex(index); }
 	void dispatchPacket(Packet* pPacket);
 	void receivePacket(Packet* pPacket);
 	void releasePacket(void);
@@ -84,9 +79,7 @@ protected:
 	PacketQueue m_packetQueue;
 	Epoll* m_pEpoll;
 	Packet* m_tempReadPacket;
-	UniqueHandle m_uniqueHandle;
 	std::atomic_flag m_stateOutFlag;
-	SocketHandlerType m_handlerType;
 	volatile bool m_isIdentify;
 };//end class Accept
 

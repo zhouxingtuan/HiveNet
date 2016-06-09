@@ -11,7 +11,7 @@ CC = gcc
 
 DEBUG= -g -ggdb
 
-OBJS = common.o buffer.o packet.o taskinterface.o handlerinterface.o worker.o handlerqueue.o accept.o client.o epoll.o
+OBJS = common.o buffer.o packet.o taskinterface.o handlerinterface.o worker.o uniquemanager.o handlerqueue.o accept.o client.o epoll.o
 
 all: $(OBJS)
 
@@ -29,6 +29,8 @@ taskinterface.o:common.o taskinterface.cpp taskinterface.h
 handlerinterface.o:packet.o taskinterface.o handlerinterface.cpp handlerinterface.h
 
 worker.o:handlerinterface.o worker.cpp worker.h
+
+uniquemanager.o:common.o uniquemanager.cpp uniquemanager.h
 
 handlerqueue.o:worker.o handlerinterface.o handlerqueue.cpp handlerqueue.h
 

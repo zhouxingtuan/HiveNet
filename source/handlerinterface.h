@@ -14,14 +14,14 @@
 
 NS_HIVENET_BEGIN
 
-class HandlerInterface : public RefObject, public Sync
+class HandlerInterface : public Unique, public Sync
 {
 public:
 	friend class Worker;
 	friend class TaskInterface;
 public:
 	typedef std::deque<TaskInterface*> TaskInterfaceQueue;
-	HandlerInterface(void);
+	HandlerInterface(unique_char uniqueType);
 	virtual ~HandlerInterface(void);
 
 	virtual bool onInitialize(void) = 0;

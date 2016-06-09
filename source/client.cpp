@@ -11,8 +11,8 @@
 
 NS_HIVENET_BEGIN
 
-Client::Client(Epoll* pEpoll) : Accept(pEpoll) {
-	m_handlerType = SOCKET_HANDLER_CLIENT;
+Client::Client(unique_char uniqueType) : Accept(uniqueType) {
+
 }
 Client::~Client(void){
 

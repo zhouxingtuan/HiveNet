@@ -35,6 +35,11 @@ int main(int argc, char *argv[])
 {
 	fprintf(stderr, "hello world!\n");
 	// 单例创建
+	UniqueManager::createInstance();
+	UniqueManager::getInstance()->registerCreateFunction(UNIQUE_HANDLER_ACCEPT, Accept::CreateFunction);
+	UniqueManager::getInstance()->registerCreateFunction(UNIQUE_HANDLER_CLIENT, Client::CreateFunction);
+	UniqueManager::getInstance()->registerCreateFunction(UNIQUE_HANDLER_SCRIPT, Script::CreateFunction);
+
 	ScriptManager::createInstance();
 	HandlerQueue::createInstance();
 
@@ -48,17 +53,12 @@ int main(int argc, char *argv[])
 	fprintf(stderr, "value is %d and after write read value2 is %d \n", value, value2);
 	fprintf(stderr, "p getRefCount %d\n", p->getRefCount());
 
-	unsigned int hh = 1024;
-	UniqueHandle h = hh;
-	h.increase();
-	fprintf(stderr, "unsigned int hh is %d  UniqueHandle h is %d index %d version %d\n", hh, h.getHandle(), h.getIndex(), h.getVersion());
-
 	HandlerQueue::getInstance()->createWorker(4);
 
 	Script* pScript = ScriptManager::getInstance()->create();
 	pScript->setInitString("print('Hello World From Lua') require('test')");
 	pScript->onInitialize();
-	pScript->onHandleMessage(p);
+	pScript->onHandleMessage(1, p);
 	pScript->onUpdate();
 	pScript->onDestroy();
 	ScriptManager::getInstance()->idle(pScript);
@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
 	pScript->setInitString("print('Hello World From Lua the second time') require('test')");
 	TaskInitialize* pInit = new TaskInitialize(pScript);
 	pInit->commitTask();
-	TaskHandleMessage* phm = new TaskHandleMessage(pScript, p);
+	TaskHandleMessage* phm = new TaskHandleMessage(pScript, 2, p);
 	phm->commitTask();
 	TaskUpdate* pUpdate = new TaskUpdate(pScript);
 	pUpdate->commitTask();
@@ -78,8 +78,7 @@ int main(int argc, char *argv[])
 	sleep(3);
 	HandlerQueue::destroyInstance();
 	ScriptManager::destroyInstance();
-
-
+	UniqueManager::destroyInstance();
 
 	return 0;
 }

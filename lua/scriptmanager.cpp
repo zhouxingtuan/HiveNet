@@ -11,7 +11,7 @@
 NS_HIVENET_BEGIN
 
 static ScriptManager* g_pScriptManager = NULL;
-ScriptManager::ScriptManager() : RefObject(), Sync(), m_pMaster(NULL) {
+ScriptManager::ScriptManager() : RefObject(), m_pMaster(NULL) {
 	openMaster();
 }
 ScriptManager::~ScriptManager(){
@@ -32,117 +32,48 @@ void ScriptManager::destroyInstance(void){
 }
 //创建一个Script
 Script* ScriptManager::create(void){
-	unsigned int index;
-    Script* ret;
-    lock();
-    if( !m_idleIndex.empty() ){
-    	index = m_idleIndex.back();
-    	m_idleIndex.pop_back();
-		ret = m_scripts[index];
-		if( NULL == ret ){
-			ret = new Script(NULL);
-			ret->retain();
-			ret->setMaster(m_pMaster);
-			ret->setIndex(index);
-			m_scripts[index] = ret;
-		}
-    }else{
-    	index = m_scripts.size();
-    	ret = new Script(NULL);
-		ret->retain();
-		ret->setMaster(m_pMaster);
-		ret->setIndex(index);
-		m_scripts.push_back(ret);
-    }
-    unlock();
-	return ret;
+	Script* pScript = (Script*)UniqueManager::getInstance()->create(UNIQUE_HANDLER_SCRIPT);
+	if( NULL == pScript->getState() ){
+		pScript->setMaster(m_pMaster);
+		pScript->setState(NULL);
+	}
+	return pScript;
 }
-void ScriptManager::idle(unsigned int handle){
-	Script* ret = NULL;
-	UniqueHandle h = handle;
-	unsigned short index = h.getIndex();
-	lock();
-	if( index < m_scripts.size() ){
-		ret = m_scripts[index];
-		if( NULL != ret ){
-			if( ret->getHandle() == handle ){
-				ret->increaseVersion();	// 这里对这个对象进行了重复使用
-				m_idleIndex.push_back(index);
-			}else{
-				ret = NULL;
-			}
-		}
-    }
-	unlock();
+void ScriptManager::idle(unique_long handle){
+	UniqueManager::getInstance()->idle(handle);
 }
 void ScriptManager::idle(Script* pScript){
 	idle( pScript->getHandle() );
 }
-void ScriptManager::remove(unsigned int handle){
-	Script* ret = NULL;
-	UniqueHandle h = handle;
-	unsigned short index = h.getIndex();
-    lock();
-    if( index < m_scripts.size() ){
-		ret = m_scripts[index];
-		m_scripts[index] = NULL;
-		if( NULL != ret ){
-			if(handle == ret->getHandle()){
-				m_idleIndex.push_back(index);
-			}else{
-				ret = NULL;
-			}
-
-		}
-    }
-	unlock();
-	if( NULL != ret ){
-		ret->release();
-	}
+void ScriptManager::remove(unique_long handle){
+	UniqueManager::getInstance()->remove(handle);
 }
 void ScriptManager::remove(Script* script){
     remove( script->getHandle() );
 }
-Script* ScriptManager::getScript(unsigned int handle){
-    Script* ret = NULL;
-    UniqueHandle h = handle;
-	unsigned short index = h.getIndex();
-	lock();
-	if( index < m_scripts.size() ){
-		ret = m_scripts[index];
-	}
-	unlock();
-	if( NULL != ret && ret->getHandle() != handle ){
-		return NULL;
-	}
-	return ret;
+Script* ScriptManager::getScript(unique_long handle){
+    return (Script*)UniqueManager::getInstance()->getByHandle(handle);
 }
 //打开当前的Lua状态机
 void ScriptManager::openMaster(void){
 	if( m_pMaster == NULL ){
 		lua_State* state = lua_open();
 		if( state ){
-			m_pMaster = new Script(state);
+			m_pMaster = (Script*)UniqueManager::getInstance()->create(UNIQUE_HANDLER_SCRIPT);
+			m_pMaster->setState(state);
 			m_pMaster->retain();
 		}
 	}
 }
 //关闭当前的Lua状态机
 void ScriptManager::closeMaster(void){
-	//关闭脚本
-    lock();
-    for( auto pScript : m_scripts ){
-    	if( NULL != pScript ){
-    		pScript->release();
-    	}
-    }
-	m_scripts.clear();
-	//关闭状态
 	if(m_pMaster != NULL) {
+		// 移除所有该类型的script对象
+		UniqueManager::getInstance()->removeByType(UNIQUE_HANDLER_SCRIPT);
+//		UniqueManager::getInstance()->remove(m_pMaster);
 		m_pMaster->release();
 		m_pMaster = NULL;
 	}
-	unlock();
 }
 
 NS_HIVENET_END

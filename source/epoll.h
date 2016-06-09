@@ -12,6 +12,7 @@
 #include "handlerinterface.h"
 #include "accept.h"
 #include "client.h"
+#include "uniquemanager.h"
 
 NS_HIVENET_BEGIN
 /*--------------------------------------------------------------------*/
@@ -22,33 +23,14 @@ public:
 	EpollTaskFactory(void){}
 	virtual ~EpollTaskFactory(void){}
 
-	virtual TaskInterface* createAcceptIn(unsigned int handle, Epoll* pEpoll) = 0;
-	virtual TaskInterface* createAcceptOut(unsigned int handle, Epoll* pEpoll) = 0;
-	virtual TaskInterface* createClientIn(unsigned int handle, Epoll* pEpoll) = 0;
-	virtual TaskInterface* createClientOut(unsigned int handle, Epoll* pEpoll) = 0;
-	virtual TaskInterface* createPacketIn(unsigned int handle, Epoll* pEpoll, Packet* pPacket) = 0;
+	virtual TaskInterface* createAcceptIn(unique_long handle) = 0;
+	virtual TaskInterface* createAcceptOut(unique_long handle) = 0;
+	virtual TaskInterface* createClientIn(unique_long handle) = 0;
+	virtual TaskInterface* createClientOut(unique_long handle) = 0;
+	virtual TaskInterface* createPacketIn(unique_long handle, Packet* pPacket) = 0;
 };// end class EpollTaskFactory
 /*--------------------------------------------------------------------*/
-class AcceptManager : public RefObject, public Sync
-{
-public:
-	typedef std::vector<Accept*> AcceptVector;
-	typedef std::vector<int> IntVector;
-public:
-	AcceptManager(void);
-	virtual ~AcceptManager(void);
 
-	Accept* createAccept(Epoll* pEpoll);
-	Client* createClient(Epoll* pEpoll);
-	void idle(Accept* pAccept);
-	Accept* getByHandle(unsigned int handle);
-protected:
-	void releaseData(void);
-protected:
-	AcceptVector m_accepts;
-	IntVector m_idleIndex;
-};// end class AcceptManager
-/*--------------------------------------------------------------------*/
 #define MAX_LISTEN_SIZE 11008
 #define MAX_EPOLL_EVENT 64
 #define EPOLL_WAIT_FLAG -1
@@ -93,14 +75,14 @@ public:
 	virtual bool initialize(void);
 	virtual bool update(void);
 
-	virtual bool sendAcceptPacket(unsigned int handle, Packet* pPacket);
-	virtual bool sendClientPacket(unsigned int handle, Packet* pPacket);
+	virtual bool sendPacket(unique_long handle, Packet* pPacket);
+	virtual void setIdentify(unique_long handle, bool identify);
 	virtual EpollTaskFactory* getFactory(void){ return m_pFactory; }
 	virtual void setFactory(EpollTaskFactory* pFactory){ m_pFactory = pFactory; }
-	virtual unsigned int createClient(const char* ip, unsigned short port);
-	virtual void closeClient(unsigned int handle);
+	virtual unique_long createClient(const char* ip, unsigned short port);
+	virtual void closeClient(unique_long handle);
 	virtual bool acceptSocket(void);
-	virtual void closeAccept(unsigned int handle);
+	virtual void closeAccept(unique_long handle);
 	virtual inline void setListenSocket(const char* ip, unsigned short port){
 		strcpy(m_socket.ip, ip);
     	m_socket.port = port;
@@ -111,7 +93,7 @@ public:
 protected:
 	virtual bool tryRemoveSocket(Accept* pAccept);
 	bool receiveClient(Client* pClient);
-	bool receivePacket(unsigned int handle, Packet* pPacket);
+	bool receivePacket(unique_long handle, Packet* pPacket);
 	inline void changeStateOut(Accept* pAccept){
 		if( pAccept->triggerStateOutFlag() ){
 			if( epollChange(m_epollfd, pAccept->getSocketFD(), pAccept, EPOLLIN | EPOLLOUT) < 0 ){
@@ -130,10 +112,41 @@ protected:
 	void closeListenSocket(void);
 	bool createEpoll(void);
 	bool waitEpoll(void);
+	inline Accept* createAccept(void){
+		Accept* pAccept = (Accept*)UniqueManager::getInstance()->create(UNIQUE_HANDLER_ACCEPT);
+		pAccept->setEpoll(this);
+		return pAccept;
+	}
+	inline Accept* getAccept(unique_long handle){
+		Unique* pUnique = UniqueManager::getInstance()->getByHandle(handle);
+		if( NULL == pUnique ){
+			return NULL;
+		}
+		if( pUnique->getType() != UNIQUE_HANDLER_ACCEPT ){
+			return NULL;
+		}
+		return (Accept*)pUnique;
+	}
+	inline Client* createClient(void){
+		Client* pClient = (Client*)UniqueManager::getInstance()->create(UNIQUE_HANDLER_CLIENT);
+		pClient->setEpoll(this);
+		return pClient;
+	}
+	inline Client* getClient(unique_long handle){
+		Unique* pUnique = UniqueManager::getInstance()->getByHandle(handle);
+		if( NULL == pUnique ){
+			return NULL;
+		}
+		if( pUnique->getType() != UNIQUE_HANDLER_CLIENT ){
+			return NULL;
+		}
+		return (Client*)pUnique;
+	}
+	inline void idleConnect(Accept* pAccept){
+		UniqueManager::getInstance()->idle(pAccept);
+	}
 protected:
 	EpollTaskFactory* m_pFactory;
-	AcceptManager* m_pAccepts;
-	AcceptManager* m_pClients;
 	volatile int m_curfds;
 	int m_epollfd;
 	struct epoll_event m_events[MAX_EPOLL_EVENT];

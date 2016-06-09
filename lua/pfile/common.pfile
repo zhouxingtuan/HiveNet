@@ -20,22 +20,3 @@ class Thread
 
 };
 /*--------------------------------------------------------------------*/
-
-// 唯一性控制结构
-typedef struct UniqueHandle{
-	inline void increase(void){ ++this->unique.version; }
-	inline void setIndex(unsigned short index){ this->unique.index = index; }
-	inline unsigned short getIndex(void) const { return this->unique.index; }
-	inline unsigned short getVersion(void) const { return this->unique.version; }
-	inline unsigned int getHandle(void) const { return this->handle; }
-} UniqueHandle;
-
-// 64位长度，唯一性控制结构
-typedef struct LongUniqueHandle{
-	inline void increase(void){ ++this->unique.version; }
-	inline void setIndex(unsigned int index){ this->unique.index = index; }
-	inline unsigned int getIndex(void) const { return this->unique.index; }
-	inline unsigned int getVersion(void) const { return this->unique.version; }
-	inline unsigned long long getHandle(void) const { return this->handle; }
-} LongUniqueHandle;
-

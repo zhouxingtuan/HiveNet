@@ -16,11 +16,14 @@ NS_HIVENET_BEGIN
 class Client : public Accept
 {
 public:
-	explicit Client(Epoll* pEpoll);
+	explicit Client(unique_char uniqueType);
 	virtual ~Client(void);
 
 	virtual bool tryConnectServer(void);
 
+	static Unique* CreateFunction(unique_char uniqueType){
+		return new Client(uniqueType);
+	}
 	static void* syncConnectServer(void* pData);
 
     virtual inline std::string getClassName(void) const {

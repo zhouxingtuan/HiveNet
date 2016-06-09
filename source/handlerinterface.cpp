@@ -11,7 +11,7 @@
 
 NS_HIVENET_BEGIN
 
-HandlerInterface::HandlerInterface(void) : RefObject(), Sync(), m_isInHandlerQueue(false) {
+HandlerInterface::HandlerInterface(unique_char uniqueType) : Unique(uniqueType), Sync(), m_isInHandlerQueue(false) {
 
 }
 HandlerInterface::~HandlerInterface(void){

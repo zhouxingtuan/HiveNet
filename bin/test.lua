@@ -30,8 +30,8 @@ function onInitialize(pScript)
     print("onInitialize called cobj is", pScript:getClassName())
 end
 
-function onHandleMessage(pPacket)
-    print("onHandleMessage called cobj is", pPacket:getClassName())
+function onHandleMessage(handle, pPacket)
+    print("onHandleMessage called handle", handle, "cobj is", pPacket:getClassName())
 end
 
 function onUpdate()

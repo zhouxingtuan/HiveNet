@@ -13,7 +13,7 @@
 
 NS_HIVENET_BEGIN
 
-class ScriptManager : public RefObject, public Sync
+class ScriptManager : public RefObject
 {
 public:
 	typedef std::vector<Script*> ScriptVector;
@@ -26,24 +26,20 @@ public:
 	static void destroyInstance(void);
 
 	Script* create(void);			// 创建一个脚本
-	void idle(unsigned int handle);	// 闲置这个脚本by handle
+	void idle(unique_long handle);	// 闲置这个脚本by handle
 	void idle(Script* pScript);		// 闲置这个脚本by ptr
-	void remove(unsigned int handle);	// 移除这个脚本by handle
+	void remove(unique_long handle);	// 移除这个脚本by handle
 	void remove(Script* pScript);		// 移除这个脚本by ptr
-	Script* getScript(unsigned int handle);
+	Script* getScript(unique_long handle);
 	Script* getMaster(){ return m_pMaster; }
 	virtual inline std::string getClassName(void) const {
 		return "ScriptManager";
 	}
 protected:
-	//关闭当前的Lua状态机
-	void closeMaster(void);
-	//打开当前的Lua状态机
-	void openMaster(void);
+	void closeMaster(void);	//关闭当前的Lua状态机
+	void openMaster(void);	//打开当前的Lua状态机
 protected:
 	Script* m_pMaster;
-	ScriptVector m_scripts;
-	IntVector m_idleIndex;
 };// end class ScriptManager
 NS_HIVENET_END
 
