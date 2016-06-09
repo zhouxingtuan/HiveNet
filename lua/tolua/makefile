@@ -8,12 +8,14 @@ STATICLIB := $(LUAJIT_STATICLIB)
 CFLAGS = -O2 -Wall $(INCLUDES) -lstdc++ $(STATICLIB)
 CC = gcc
 
+DEBUG= -g -ggdb
+
 OBJS= tolua_event.o tolua_is.o tolua_to.o tolua_map.o tolua_push.o
 
 all: $(OBJS)
 
 $(OBJS): %.o:%.c
-	$(CC) -g -c $< -o $@ $(CFLAGS)
+	$(CC) $(DEBUG) -c $< -o $@ $(CFLAGS)
 
 tolua_event.o:tolua_event.c tolua_event.h tolua++.h
 

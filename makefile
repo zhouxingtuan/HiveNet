@@ -35,6 +35,7 @@ INCLUDES = -I$(LUAJIT_INC) -I$(TOLUA_INC) -I$(OPENSSL_INC) -I$(LUASQL_INC) -I$(L
 CFLAGS = -O2 -Wall -pthread -lrt $(INCLUDES) -lstdc++ -std=c++11 $(HIVENET_STATICLIB) $(LIBPATH) $(LIBS) -ldl
 
 CC = gcc
+DEBUG= -g -ggdb
 RM = rm -f
 BIN = bin
 TARGET = server
@@ -52,10 +53,10 @@ $(TARGET): $(LUA_OBJDIR) $(TOLUA_OBJDIR) $(HIVENET_OBJDIR) main.o
 	$(MAKE) -C lua/tolua
 	$(MAKE) -C lua
 	$(MAKE) -C source
-	$(CC) -g $(LUA_OBJDIR)/*.o $(TOLUA_OBJDIR)/*.o $(HIVENET_OBJDIR)/*.o main.o -o $(BIN)/$(TARGET) $(CFLAGS)
+	$(CC) $(DEBUG) $(LUA_OBJDIR)/*.o $(TOLUA_OBJDIR)/*.o $(HIVENET_OBJDIR)/*.o main.o -o $(BIN)/$(TARGET) $(CFLAGS)
 
 main.o: main.cpp
-	$(CC) -g -c $< -o $@ -O2 -Wall -pthread $(INCLUDES) -lstdc++ -std=c++11 -ldl
+	$(CC) $(DEBUG) -c $< -o $@ -O2 -Wall -pthread $(INCLUDES) -lstdc++ -std=c++11 -ldl
 
 
 clean:

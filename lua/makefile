@@ -20,19 +20,21 @@ INCLUDES = -I$(OPENSSL_INC) -I$(LUASOCKET_INC) -I$(LUASQL_INC) -I$(LUAHIREDIS_IN
 CFLAGS = -O2 -Wall -pthread $(INCLUDES) -L$(OPENSSL_LIB) -L$(LUASOCKET_STATICLIB) -L$(LUASQL_STATICLIB) -L$(LUAHIREDIS_STATICLIB) -lssl -lcrypto -lstdc++ -std=c++11 -ldl
 CC = gcc
 
+DEBUG= -g -ggdb
+
 OBJS = script.o scriptmanager.o hivenet.o
 
 all: $(OBJS)
 
 $(OBJS): %.o:%.cpp
-	$(CC) -g -c $< -o $@ $(CFLAGS)
+	$(CC) $(DEBUG) -c $< -o $@ $(CFLAGS)
 
 script.o:script.cpp script.h ../source/handlerinterface.h
 
 scriptmanager.o:script.o scriptmanager.cpp scriptmanager.h
 
 #manual.o:manual.hpp
-#	$(CC) -g -c $< -o $@ $(CFLAGS)
+#	$(CC) $(DEBUG) -c $< -o $@ $(CFLAGS)
 
 hivenet.o:$(OBJS) manual.hpp hivenet.cpp ../source/hivenet.h
 

@@ -61,10 +61,12 @@ DRIVER_INCS= -I/usr/include/mysql
 #DRIVER_LIBS= -L/usr/local/firebird -lfbclient
 #DRIVER_INCS=
 
+DEBUG= -g -ggdb
+
 WARN= -Wall -Wmissing-prototypes -Wmissing-declarations -ansi -pedantic
 INCS= -I$(LUA_INC)
 CFLAGS= -O2 $(WARN) -fPIC $(DRIVER_INCS) $(INCS) -DLUASQL_VERSION_NUMBER='"$V"' $(DEFS)
-STATIC_CFLAGS= -O2 $(WARN) $(DRIVER_INCS) $(INCS) -DLUASQL_VERSION_NUMBER='"$V"' $(DEFS)
+STATIC_CFLAGS= -O2 $(WARN) $(DRIVER_INCS) $(DEBUG) $(INCS) -DLUASQL_VERSION_NUMBER='"$V"' $(DEFS)
 CC= gcc
 ARCMD = ar
 ARFLAGS = cr
