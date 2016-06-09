@@ -1,0 +1,46 @@
+# makefile for building Lua
+# see ../INSTALL for installation instructions
+# see ../Makefile and luaconf.h for further customization
+
+CFLAGS = -O2 -Wall -pthread -lrt -ldl -lstdc++ -std=c++11
+CC = gcc
+
+# == CHANGE THE SETTINGS BELOW TO SUIT YOUR ENVIRONMENT =======================
+
+# Your platform. See PLATS for possible values.
+
+
+# == END OF USER SETTINGS. NO NEED TO CHANGE ANYTHING BELOW THIS LINE =========
+
+OBJ=net.o hiredis.o sds.o async.o read.o
+
+OBJS= $(OBJ)
+
+all: $(OBJS)
+
+$(OBJS): %.o:%.c
+	$(CC) -c $< -o $@ $(CFLAGS)
+
+clean:
+	rm -rf $(OBJS) *.o
+
+# convenience targets for popular platforms
+
+
+# use this on Mac OS X 10.3-
+#	$(MAKE) all MYCFLAGS=-DLUA_USE_MACOSX
+
+# list targets that do not create files (but not all makes understand .PHONY)
+
+
+# DO NOT DELETE
+
+# Deps (use make dep to generate this)
+async.o: async.c fmacros.h async.h hiredis.h read.h sds.h net.h dict.c dict.h
+dict.o: dict.c fmacros.h dict.h
+hiredis.o: hiredis.c fmacros.h hiredis.h read.h sds.h net.h
+net.o: net.c fmacros.h net.h hiredis.h read.h sds.h
+read.o: read.c fmacros.h read.h sds.h
+sds.o: sds.c sds.h
+
+# (end of Makefile)

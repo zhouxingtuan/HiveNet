@@ -21,6 +21,7 @@ extern "C" {
 #include "x509.h"
 #include "ssl.h"
 #include "luasql.h"
+#include "luahiredis.h"
 }
 
 NS_HIVENET_BEGIN

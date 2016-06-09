@@ -38,6 +38,8 @@ Script::Script(lua_State* pState) : HandlerInterface(), m_pState(NULL), m_pMaste
 	luaopen_ssl_core(m_pState);
 	// open luasql libs
 	luaopen_luasql_mysql(m_pState);
+	// open luahiredis libs
+	luaopen_hiredis(m_pState);
 	// open self define c libs
 	tolua_hivenet_open(m_pState);
 }

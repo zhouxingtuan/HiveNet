@@ -10,11 +10,14 @@ LUASOCKET_INC := ./luasocket/src/
 LUASQL_STATICLIB := ./luasql/src/libluasql.a
 LUASQL_INC := ./luasql/src/
 
+LUAHIREDIS_STATICLIB := ./luahiredis/libhiredis.a
+LUAHIREDIS_INC := ./luahiredis/
+
 HIVENET_INC := ./../source
 
-INCLUDES = -I$(OPENSSL_INC) -I$(LUASOCKET_INC) -I$(LUASQL_INC) -I$(JEMALLOC_INC) -I$(HIVENET_INC)
+INCLUDES = -I$(OPENSSL_INC) -I$(LUASOCKET_INC) -I$(LUASQL_INC) -I$(LUAHIREDIS_INC) -I$(JEMALLOC_INC) -I$(HIVENET_INC)
 
-CFLAGS = -O2 -Wall -pthread $(INCLUDES) -L$(OPENSSL_LIB) -L$(LUASOCKET_STATICLIB) -L$(LUASQL_STATICLIB) -lssl -lcrypto -lstdc++ -std=c++11 -ldl
+CFLAGS = -O2 -Wall -pthread $(INCLUDES) -L$(OPENSSL_LIB) -L$(LUASOCKET_STATICLIB) -L$(LUASQL_STATICLIB) -L$(LUAHIREDIS_STATICLIB) -lssl -lcrypto -lstdc++ -std=c++11 -ldl
 CC = gcc
 
 OBJS = script.o scriptmanager.o hivenet.o
