@@ -1,6 +1,0 @@
-
-
-class Buffer : public RefObject
-{
-
-};

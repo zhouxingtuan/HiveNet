@@ -1,6 +1,14 @@
 
-class Script : public HandlerInterface
+typedef long int 		unique_long;
+typedef unsigned int 	unique_int;
+typedef unsigned short 	unique_short;
+typedef unsigned char 	unique_char;
+
+class Script
 {
+	virtual bool sendMessage(unique_long handle, const char* pData, unsigned int length){ return false; }
+    inline void setInitString(const char* initFile){ m_initString = initFile; }
+    inline const std::string& getInitString(void) const { return m_initString; }
     virtual inline std::string getClassName(void) const {
         return "Script";
     }

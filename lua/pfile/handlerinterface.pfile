@@ -1,8 +1,0 @@
-
-
-class HandlerInterface : public RefObject, public Sync
-{
-    virtual inline std::string getClassName(void) const {
-        return "HandlerInterface";
-    }
-};// end class HandlerInterface

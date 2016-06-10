@@ -151,5 +151,20 @@ void UniqueManager::removeByType(unique_char uniqueType){
 		pUnique->release();
 	}
 }
+void UniqueManager::loop(unique_char uniqueType, LoopFunction loopFunc){
+	UniqueVector vecObj;
+	lock();
+	for( auto pUnique : m_uniqueObjects ){
+		if( NULL != pUnique && pUnique->getType() == uniqueType ){
+			pUnique->retain();
+			vecObj.push_back(pUnique);
+		}
+	}
+	unlock();
+	for( auto pUnique : vecObj ){
+		loopFunc(pUnique);
+		pUnique->release();
+	}
+}
 
 NS_HIVENET_END

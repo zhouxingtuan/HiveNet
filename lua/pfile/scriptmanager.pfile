@@ -1,15 +1,15 @@
 
 
-class ScriptManager : public RefObject
+class ScriptManager
 {
 	static ScriptManager* getInstance(void);
-	static ScriptManager* createInstance(void);
-	static void destroyInstance(void);
 
-	Script* create(void);
-	void remove(int stateID);
-	void remove(Script* pScript);
-	Script* getScript(int stateID);
+	Script* create(void);			// 创建一个脚本
+	void idle(unique_long handle);	// 闲置这个脚本by handle
+	void idle(Script* pScript);		// 闲置这个脚本by ptr
+	void remove(unique_long handle);	// 移除这个脚本by handle
+	void remove(Script* pScript);		// 移除这个脚本by ptr
+	Script* getScript(unique_long handle);
 	Script* getMaster(){ return m_pMaster; }
 	virtual inline std::string getClassName(void) const {
 		return "ScriptManager";

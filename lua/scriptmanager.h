@@ -25,6 +25,9 @@ public:
 	static ScriptManager* createInstance(void);
 	static void destroyInstance(void);
 
+	void timerUpdate(void);
+	bool startTimer(unsigned int second, unsigned int nsecond=0);
+	virtual bool sendPacket(unique_long handle, Packet* pPacket);
 	Script* create(void);			// 创建一个脚本
 	void idle(unique_long handle);	// 闲置这个脚本by handle
 	void idle(Script* pScript);		// 闲置这个脚本by ptr
@@ -40,6 +43,7 @@ protected:
 	void openMaster(void);	//打开当前的Lua状态机
 protected:
 	Script* m_pMaster;
+	timer_t m_timer_id;
 };// end class ScriptManager
 NS_HIVENET_END
 

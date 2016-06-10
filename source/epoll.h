@@ -87,10 +87,13 @@ public:
 		strcpy(m_socket.ip, ip);
     	m_socket.port = port;
 	}
+	virtual void closeEpoll(void);
     virtual inline std::string getClassName(void) const {
         return "Epoll";
     }
 protected:
+	virtual inline void setEpollExit(bool exitNow){ m_exitNow = true; }
+	virtual inline bool isEpollExit(void) const { return m_exitNow; }
 	virtual bool tryRemoveSocket(Accept* pAccept);
 	bool receiveClient(Client* pClient);
 	bool receivePacket(unique_long handle, Packet* pPacket);
@@ -149,6 +152,7 @@ protected:
 	EpollTaskFactory* m_pFactory;
 	volatile int m_curfds;
 	int m_epollfd;
+	volatile bool m_exitNow;
 	struct epoll_event m_events[MAX_EPOLL_EVENT];
 	SocketInformation m_socket;
 };// end class Epoll

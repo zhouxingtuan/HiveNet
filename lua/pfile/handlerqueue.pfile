@@ -1,10 +1,10 @@
 
-class HandlerQueue : public RefObject, public Sync
+class HandlerQueue
 {
 	static HandlerQueue* getInstance(void);
-	static HandlerQueue* createInstance(void);
-	static void destroyInstance(void);
 
 	void createWorker(int workerNumber);
-
+    virtual inline std::string getClassName(void) const {
+        return "HandlerQueue";
+    }
 };

@@ -16,7 +16,8 @@ NS_HIVENET_BEGIN
 class UniqueManager : public RefObject, public Sync
 {
 public:
-	typedef Unique*(*CreateFunction)(unique_char uniqueType);
+	typedef Unique* (*CreateFunction)(unique_char uniqueType);
+	typedef void (*LoopFunction)(Unique* pUnique);
 	typedef std::vector<Unique*> UniqueVector;
 	typedef std::vector<unique_int> IntVector;
 	typedef std::vector<IntVector> IdleVector;
@@ -37,6 +38,7 @@ public:
 	void remove(Unique* pUnique);
 	void remove(unique_long handle);
 	void removeByType(unique_char uniqueType);
+	void loop(unique_char uniqueType, LoopFunction loopFunc);
 protected:
 	void releaseObjects(void);
 protected:

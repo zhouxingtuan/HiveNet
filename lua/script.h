@@ -59,6 +59,8 @@ public:
 	virtual TaskInterface* createClientOut(unique_long handle);
 	virtual TaskInterface* createPacketIn(unique_long handle, Packet* pPacket);
 
+	virtual bool sendMessage(unique_long handle, const char* pData, unsigned int length){ return false; }
+	virtual bool sendMessage(unique_long handle, Packet* pPacket);
 	virtual void setState(lua_State* pState);
 	inline lua_State * getState( void ) { return m_pState; }
     inline void setInitString(const char* initFile){ m_initString = initFile; }

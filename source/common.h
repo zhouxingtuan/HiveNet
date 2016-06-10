@@ -145,18 +145,18 @@ protected:
 };
 /*--------------------------------------------------------------------*/
 #define INVALID_UNIQUE_HANDLE -1
-typedef long int 		unique_long;
-typedef unsigned int 	unique_int;
-typedef unsigned short 	unique_short;
-typedef unsigned char 	unique_char;
+typedef long long		unique_long;
+typedef unsigned int	unique_int;
+typedef unsigned short	unique_short;
+typedef unsigned char	unique_char;
 // 唯一性控制结构
 typedef struct UniqueHandle{
 	union{
 		struct{
-			unique_int 		index;
-			unique_short 	version;
-			unique_char 	type;
-			unique_char 	reserve;
+			unique_int		index;
+			unique_short	version;
+			unique_char		type;
+			unique_char		reserve;
 		}unique;
 		unique_long handle;
 	};

@@ -72,6 +72,7 @@ bool Script::onUpdate(void){
 bool Script::onDestroy(void){
     static char onDestroy[]="onDestroy";
     callGlobalFunction( onDestroy );
+    UniqueManager::getInstance()->idle(this);	// 这里比较特别，在idle一个对象的时候，需要先调用onDestroy在移除
     return true;
 }
 bool Script::onAcceptIn(unique_long handle){
@@ -108,6 +109,26 @@ TaskInterface* Script::createClientOut(unique_long handle){
 }
 TaskInterface* Script::createPacketIn(unique_long handle, Packet* pPacket){
 	return new TaskHandleMessage(this, handle, pPacket);
+}
+bool Script::sendMessage(unique_long handle, Packet* pPacket){
+	UniqueHandle h = handle;
+	unique_char t = h.getType();
+	switch(t){
+		case UNIQUE_HANDLER_ACCEPT:
+		case UNIQUE_HANDLER_CLIENT:{
+			return Epoll::getInstance()->sendPacket(handle, pPacket);
+			break;
+		}
+		case UNIQUE_HANDLER_SCRIPT:{
+			return ScriptManager::getInstance()->sendPacket(handle, pPacket);
+			break;
+		}
+		default:{
+			fprintf(stderr, "--Script::sendMessage handler type is not valid\n");
+			break;
+		}
+	}
+	return false;
 }
 
 NS_HIVENET_END

@@ -11,11 +11,11 @@
 NS_HIVENET_BEGIN
 /*--------------------------------------------------------------------*/
 static Epoll* g_pEpoll = NULL;
-Epoll::Epoll() : RefObject(), m_pFactory(NULL), m_curfds(0), m_epollfd(0) {
+Epoll::Epoll() : RefObject(), m_pFactory(NULL), m_curfds(0), m_epollfd(0), m_exitNow(false) {
 	memset(&m_socket, 0, sizeof(struct SocketInformation));
 }
 Epoll::~Epoll(){
-	closeListenSocket();  // 关闭套接字
+	closeEpoll();  // 关闭套接字
 }
 Epoll* Epoll::getInstance(void){
 	return g_pEpoll;
@@ -33,19 +33,22 @@ void Epoll::destroyInstance(void){
 bool Epoll::initialize(void){
 	if( 0 == m_socket.port ){
 		fprintf(stderr, "--Epoll::onInitialize socket ip and port is not set yet\n");
-		return true;
+		return false;
 	}
 	if( !initListenSocket() ){
 		fprintf(stderr, "--Epoll::onInitialize initListenSocket failed\n");
-		return true;
+		return false;
 	}
 	if( !createEpoll() ){
 		fprintf(stderr, "--Epoll::onInitialize socket createEpoll failed\n"); // epoll 创建失败
-		return true;
+		return false;
 	}
 	return true;
 }
 bool Epoll::update(void){
+	if( isEpollExit() ){
+		return false;
+	}
 	if( !waitEpoll() ){
 		return false;
 	}
@@ -173,8 +176,8 @@ bool Epoll::acceptSocket(void){
 bool Epoll::createEpoll(void){
     m_epollfd = epoll_create(MAX_LISTEN_SIZE);
     // 检查是否需要添加监听端口
-    if( m_socket.port == 0 ){
-        return true;
+    if( m_socket.fd == 0 ){
+        return false;
     }
     if( epollAdd(m_epollfd, m_socket.fd, this) < 0 ){
         close(m_epollfd);
@@ -192,8 +195,7 @@ bool Epoll::waitEpoll(void){
     int nfds;
     nfds = epoll_wait(m_epollfd, m_events, MAX_EPOLL_EVENT, EPOLL_WAIT_FLAG);
     if(nfds < 0){
-        fprintf(stderr, "epoll_wait error\n");
-        return false;
+        return true;	// nothing happened
     }
     for(n=0; n < nfds; ++n){
         pEvent = &m_events[n];
@@ -249,6 +251,7 @@ bool Epoll::initListenSocket(void){
   		fprintf(stderr, "--Epoll::initListenSocket socket listen error\n");
 		goto SOCK_FAILED;
     }
+    fprintf(stderr, "--Epoll::initListenSocket OK ip=%s port=%d\n", m_socket.ip, m_socket.port);
     m_socket.fd = fd;
     return true;
 SOCK_FAILED:
@@ -261,10 +264,14 @@ void Epoll::closeListenSocket(void){
         close(m_socket.fd);
         m_socket.fd = 0;
     }
+}
+void Epoll::closeEpoll(void){
+	closeListenSocket();
     if( m_epollfd != 0 ){
         close(m_epollfd);
         m_epollfd = 0;
     }
+    setEpollExit(true);
 }
 
 NS_HIVENET_END

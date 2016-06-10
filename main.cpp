@@ -39,45 +39,42 @@ int main(int argc, char *argv[])
 	UniqueManager::getInstance()->registerCreateFunction(UNIQUE_HANDLER_ACCEPT, Accept::CreateFunction);
 	UniqueManager::getInstance()->registerCreateFunction(UNIQUE_HANDLER_CLIENT, Client::CreateFunction);
 	UniqueManager::getInstance()->registerCreateFunction(UNIQUE_HANDLER_SCRIPT, Script::CreateFunction);
-
-	ScriptManager::createInstance();
 	HandlerQueue::createInstance();
+	ScriptManager::createInstance();
+	Epoll::createInstance();
 
-	int value = 1000;
-	Packet* p = new Packet(120);
-	p->retain();
-	p->write(&value, sizeof(value));
-	p->resetCursor();
-	int value2 = 0;
-	p->read(&value2, sizeof(value2));
-	fprintf(stderr, "value is %d and after write read value2 is %d \n", value, value2);
-	fprintf(stderr, "p getRefCount %d\n", p->getRefCount());
+	// 使用master脚本加载init.lua文件
+	Script* pMaster = ScriptManager::getInstance()->getMaster();
+	Epoll::getInstance()->setFactory(pMaster);	// 将master脚本设置成为
+	std::string init = "require('init')";
+	if( !pMaster->executeText(init.c_str(), init.length()) ){
+		fprintf(stderr, "init.lua file for initialize can not be found\n");
+		goto MAIN_EXIT;
+	}
+	if( !Epoll::getInstance()->initialize() ){
+		fprintf(stderr, "epoll initialize failed main exit\n");
+		goto MAIN_EXIT;
+	}
+	// 初始化master脚本，调用该脚本的初始化函数
+	pMaster->onInitialize();
+	// 开始定时器// 纳秒级别，每秒更新10次就是100毫秒
+	if( !ScriptManager::getInstance()->startTimer(0, 100000000) ){
+		fprintf(stderr, "ScriptManager startTimer failed main exit\n");
+		goto MAIN_EXIT;
+	}
+	while(true){
+		if( !Epoll::getInstance()->update() ){
+			fprintf(stderr, "epoll update error main exit\n");
+			break;
+		}
+	};
+	pMaster->onDestroy();
 
-	HandlerQueue::getInstance()->createWorker(4);
-
-	Script* pScript = ScriptManager::getInstance()->create();
-	pScript->setInitString("print('Hello World From Lua') require('test')");
-	pScript->onInitialize();
-	pScript->onHandleMessage(1, p);
-	pScript->onUpdate();
-	pScript->onDestroy();
-	ScriptManager::getInstance()->idle(pScript);
-	pScript = ScriptManager::getInstance()->create();
-	pScript->setInitString("print('Hello World From Lua the second time') require('test')");
-	TaskInitialize* pInit = new TaskInitialize(pScript);
-	pInit->commitTask();
-	TaskHandleMessage* phm = new TaskHandleMessage(pScript, 2, p);
-	phm->commitTask();
-	TaskUpdate* pUpdate = new TaskUpdate(pScript);
-	pUpdate->commitTask();
-	TaskDestroy* pDestroy = new TaskDestroy(pScript);
-	pDestroy->commitTask();
-
-	p->release();
-
+MAIN_EXIT:
 	sleep(3);
-	HandlerQueue::destroyInstance();
+	Epoll::destroyInstance();
 	ScriptManager::destroyInstance();
+	HandlerQueue::destroyInstance();
 	UniqueManager::destroyInstance();
 
 	return 0;
