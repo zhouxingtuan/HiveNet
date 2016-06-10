@@ -73,12 +73,31 @@ bool Epoll::tryRemoveSocket(Accept* pAccept){
 	return true;
 }
 bool Epoll::sendPacket(unique_long handle, Packet* pPacket){
-	Accept* pAccept = getAccept(handle);
-	if( NULL == pAccept ){
-		return false;
+	UniqueHandle h = handle;
+	unique_char handlerType = h.getType();
+	switch(handlerType){
+		case UNIQUE_HANDLER_ACCEPT:{
+			Accept* pAccept = (Accept*)UniqueManager::getInstance()->getByHandle(handle);
+			if( NULL == pAccept ){
+				return false;
+			}
+			pAccept->receivePacket(pPacket);
+			return true;
+		}
+		case UNIQUE_HANDLER_CLIENT:{
+			Client* pClient = (Client*)UniqueManager::getInstance()->getByHandle(handle);
+			if( NULL == pClient ){
+				return false;
+			}
+			pClient->receivePacket(pPacket);
+			return true;
+		}
+		default:{
+			fprintf(stderr, "--Epoll::sendPacket handler type is not valid\n");
+			break;
+		}
 	}
-	pAccept->receivePacket(pPacket);
-	return true;
+	return false;
 }
 void Epoll::setIdentify(unique_long handle, bool identify){
 	Accept* pAccept = getAccept(handle);

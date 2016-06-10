@@ -96,6 +96,13 @@ public:
 		luaCall(2);
 		lua_settop(m_pState, 0);
 	}
+	inline void callGlobalFunction(const char * function_name, unique_long handle, const char* ptr, unsigned int length){
+		lua_getglobal(m_pState, function_name);
+		tolua_pushnumber(m_pState,(lua_Number)handle);
+		lua_pushlstring(m_pState,ptr,length);
+		luaCall(2);
+		lua_settop(m_pState, 0);
+	}
 	inline void callGlobalFunction(const char * function_name, void* ptr, const char* class_name){
 		lua_getglobal(m_pState, function_name);
 		tolua_pushusertype(m_pState, (void*)ptr, class_name);

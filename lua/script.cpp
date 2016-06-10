@@ -60,8 +60,9 @@ bool Script::onInitialize(void){
 }
 bool Script::onHandleMessage(unique_long handle, Packet* pPacket){
 	static char onHandleMessage[]="onHandleMessage";
-	static char namePacket[]="Packet";
-	callGlobalFunction(onHandleMessage, handle, pPacket, namePacket);
+//	static char namePacket[]="Packet";
+	pPacket->setCursor(PACKET_HEAD_LENGTH);
+	callGlobalFunction(onHandleMessage, handle, pPacket->getCursorPtr(), pPacket->getLength()-PACKET_HEAD_LENGTH);
 	return true;
 }
 bool Script::onUpdate(void){
@@ -117,11 +118,9 @@ bool Script::sendMessage(unique_long handle, Packet* pPacket){
 		case UNIQUE_HANDLER_ACCEPT:
 		case UNIQUE_HANDLER_CLIENT:{
 			return Epoll::getInstance()->sendPacket(handle, pPacket);
-			break;
 		}
 		case UNIQUE_HANDLER_SCRIPT:{
 			return ScriptManager::getInstance()->sendPacket(handle, pPacket);
-			break;
 		}
 		default:{
 			fprintf(stderr, "--Script::sendMessage handler type is not valid\n");

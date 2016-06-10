@@ -75,13 +75,14 @@ public:
 	virtual bool initialize(void);
 	virtual bool update(void);
 
-	virtual bool sendPacket(unique_long handle, Packet* pPacket);
-	virtual void setIdentify(unique_long handle, bool identify);
+	virtual bool acceptSocket(void);
 	virtual EpollTaskFactory* getFactory(void){ return m_pFactory; }
 	virtual void setFactory(EpollTaskFactory* pFactory){ m_pFactory = pFactory; }
+	virtual bool sendPacket(unique_long handle, Packet* pPacket);
+
+	virtual void setIdentify(unique_long handle, bool identify);
 	virtual unique_long createClient(const char* ip, unsigned short port);
 	virtual void closeClient(unique_long handle);
-	virtual bool acceptSocket(void);
 	virtual void closeAccept(unique_long handle);
 	virtual inline void setListenSocket(const char* ip, unsigned short port){
 		strcpy(m_socket.ip, ip);

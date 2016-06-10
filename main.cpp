@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
 	}
 	while(true){
 		if( !Epoll::getInstance()->update() ){
-			fprintf(stderr, "epoll update error main exit\n");
+			fprintf(stderr, "epoll update return false main exit\n");
 			break;
 		}
 	};

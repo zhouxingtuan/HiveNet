@@ -32,8 +32,8 @@ function onInitialize(pScript)
     require("test_luasql")
 end
 
-function onHandleMessage(handle, pPacket)
-    print("onHandleMessage called handle", handle, "cobj is", pPacket:getClassName())
+function onHandleMessage(handle, msg)
+    print("onHandleMessage called handle", handle, "msg is", msg)
 end
 
 function onUpdate()

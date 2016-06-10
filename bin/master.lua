@@ -27,18 +27,31 @@ for k,v in pairs(hiredis) do
 end
 print("-----------------")
 
+local m_pScript
 function onInitialize(pScript)
+    m_pScript = pScript
     print("onInitialize called cobj is", pScript:getClassName())
     require("test_luahiredis")
     require("test_luasql")
 end
 
-function onHandleMessage(handle, pPacket)
-    print("onHandleMessage called handle", handle, "cobj is", pPacket:getClassName())
+function onHandleMessage(handle, msg)
+    print("onHandleMessage called handle", handle, "msg is", msg)
 end
 
+local count = 0
+local isCreated = false
 function onUpdate()
-
+    if not isCreated then
+        count = count + 1
+        if count > 30 then
+            isCreated = true
+            local ip = "127.0.0.1"
+            local port = 8888
+            local handle = Epoll:getInstance():createClient(ip, port)
+            print("createClient to", ip, port, "handle", handle)
+        end
+    end
 end
 
 function onDestroy()
@@ -46,19 +59,23 @@ function onDestroy()
 end
 
 function onAcceptIn(handle)
-    print("onAcceptIn", handle)
+    print("onAcceptIn", tostring(handle))
+    local ret = m_pScript:sendMessage(handle, "Hello From Server!")
+    print("onAcceptIn sendMessage", ret)
 end
 
 function onAcceptOut(handle)
-    print("onAcceptOut", handle)
+    print("onAcceptOut", tostring(handle))
 end
 
 function onClientIn(handle)
-    print("onClientIn", handle)
+    print("onClientIn", tostring(handle))
+    local ret = m_pScript:sendMessage(handle, "Hello From Client!")
+    print("onClientIn sendMessage", ret)
 end
 
 function onClientOut(handle)
-    print("onClientOut", handle)
+    print("onClientOut", tostring(handle))
 end
 
 

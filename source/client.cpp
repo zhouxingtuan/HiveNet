@@ -12,7 +12,7 @@
 NS_HIVENET_BEGIN
 
 Client::Client(unique_char uniqueType) : Accept(uniqueType) {
-
+	setIdentify(true);	// 自己建立的连接无限制
 }
 Client::~Client(void){
 

@@ -1,8 +1,8 @@
 
-typedef long int 		unique_long;
-typedef unsigned int 	unique_int;
-typedef unsigned short 	unique_short;
-typedef unsigned char 	unique_char;
+typedef long long		unique_long;
+typedef unsigned int	unique_int;
+typedef unsigned short	unique_short;
+typedef unsigned char	unique_char;
 
 class Script
 {
