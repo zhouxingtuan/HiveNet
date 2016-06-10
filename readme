@@ -1,5 +1,4 @@
-
-1.目前程序版本为 1.0.0 alpha 版本，运行环境为Linux
+1.目前程序版本为 1.0.0 alpha 版本，运行环境为Linux。地址 https://github.com/zhouxingtuan/HiveNet
 
 2.需要自行编译/安装tolua++工具。快捷地址 https://github.com/zhouxingtuan/tolua
 
