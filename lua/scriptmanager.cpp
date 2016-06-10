@@ -74,7 +74,16 @@ void ScriptManager::remove(Script* script){
     remove( script->getHandle() );
 }
 Script* ScriptManager::getScript(unique_long handle){
-    return (Script*)UniqueManager::getInstance()->getByHandle(handle);
+	UniqueHandle h = handle;
+	unique_char handlerType = h.getType();
+	if( handlerType != UNIQUE_HANDLER_SCRIPT ){
+		return NULL;
+	}
+	Unique* pUnique = UniqueManager::getInstance()->getByHandle(handle);
+	if( NULL == pUnique ){
+		return NULL;
+	}
+	return (Script*)pUnique;
 }
 //打开当前的Lua状态机
 void ScriptManager::openMaster(void){

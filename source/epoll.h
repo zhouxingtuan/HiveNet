@@ -122,11 +122,13 @@ protected:
 		return pAccept;
 	}
 	inline Accept* getAccept(unique_long handle){
-		Unique* pUnique = UniqueManager::getInstance()->getByHandle(handle);
-		if( NULL == pUnique ){
+		UniqueHandle h = handle;
+		unique_char handlerType = h.getType();
+		if( handlerType != UNIQUE_HANDLER_ACCEPT ){
 			return NULL;
 		}
-		if( pUnique->getType() != UNIQUE_HANDLER_ACCEPT ){
+		Unique* pUnique = UniqueManager::getInstance()->getByHandle(handle);
+		if( NULL == pUnique ){
 			return NULL;
 		}
 		return (Accept*)pUnique;
@@ -137,11 +139,13 @@ protected:
 		return pClient;
 	}
 	inline Client* getClient(unique_long handle){
-		Unique* pUnique = UniqueManager::getInstance()->getByHandle(handle);
-		if( NULL == pUnique ){
+		UniqueHandle h = handle;
+		unique_char handlerType = h.getType();
+		if( handlerType != UNIQUE_HANDLER_CLIENT ){
 			return NULL;
 		}
-		if( pUnique->getType() != UNIQUE_HANDLER_CLIENT ){
+		Unique* pUnique = UniqueManager::getInstance()->getByHandle(handle);
+		if( NULL == pUnique ){
 			return NULL;
 		}
 		return (Client*)pUnique;
