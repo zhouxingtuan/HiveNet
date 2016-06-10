@@ -28,7 +28,7 @@ public:
 	void timerUpdate(void);
 	bool startTimer(unsigned int second, unsigned int nsecond=0);
 	virtual bool sendPacket(unique_long handle, Packet* pPacket);
-	Script* create(void);			// 创建一个脚本
+	Script* create(const char* initString); // 创建一个脚本
 	void idle(unique_long handle);	// 闲置这个脚本by handle
 	void idle(Script* pScript);		// 闲置这个脚本by ptr
 	void remove(unique_long handle);	// 移除这个脚本by handle

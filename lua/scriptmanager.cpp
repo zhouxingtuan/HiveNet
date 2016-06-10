@@ -40,11 +40,12 @@ bool ScriptManager::sendPacket(unique_long handle, Packet* pPacket){
 	return false;
 }
 //创建一个Script
-Script* ScriptManager::create(void){
+Script* ScriptManager::create(const char* initString){
 	Script* pScript = (Script*)UniqueManager::getInstance()->create(UNIQUE_HANDLER_SCRIPT);
 	if( NULL == pScript->getState() ){
 		pScript->setMaster(m_pMaster);
 		pScript->setState(NULL);
+		pScript->setInitString(initString);
 	}
 	TaskInitialize* pTask = new TaskInitialize(pScript);
 	pTask->commitTask();

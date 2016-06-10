@@ -1,6 +1,6 @@
 /*
 ** Lua binding: hivenet
-** Generated automatically by tolua++-1.0.92 on Fri Jun 10 11:56:01 2016.
+** Generated automatically by tolua++-1.0.92 on Fri Jun 10 12:51:23 2016.
 */
 
 #ifndef __cplusplus
@@ -554,18 +554,20 @@ static int tolua_hivenet_ScriptManager_create00(lua_State* tolua_S)
  tolua_Error tolua_err;
  if (
      !tolua_isusertype(tolua_S,1,"ScriptManager",0,&tolua_err) ||
-     !tolua_isnoobj(tolua_S,2,&tolua_err)
+     !tolua_isstring(tolua_S,2,0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,3,&tolua_err)
  )
   goto tolua_lerror;
  else
 #endif
  {
   ScriptManager* self = (ScriptManager*)  tolua_tousertype(tolua_S,1,0);
+  const char* initString = ((const char*)  tolua_tostring(tolua_S,2,0));
 #ifndef TOLUA_RELEASE
   if (!self) tolua_error(tolua_S,"invalid 'self' in function 'create'", NULL);
 #endif
   {
-   Script* tolua_ret = (Script*)  self->create();
+   Script* tolua_ret = (Script*)  self->create(initString);
     tolua_pushusertype(tolua_S,(void*)tolua_ret,"Script");
   }
  }
