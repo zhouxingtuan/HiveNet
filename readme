@@ -1,16 +1,21 @@
 
-1.运行环境为Linux
+1.目前程序版本为 1.0.0 alpha 版本，运行环境为Linux
 
-2.需要自行编译/安装tolua++工具
+2.需要自行编译/安装tolua++工具。快捷地址 https://github.com/zhouxingtuan/tolua
 
 3.编译脚本为compile,执行命令 bash compile 进行编译
 
-4.服务器目前区分几个模块：核心任务调度模块、epoll模块、脚本模块
+4.服务器目前区分几个模块：核心任务调度模块、Handler管理模块，epoll模块、脚本模块
 
-5.目前正在测试完善的模块：epoll模块
-
-6.脚本模块集成的功能有：
+5.脚本模块集成的功能有：
 （1）Luajit代替Lua
 （2）LuaSocket用于发起/监听http连接
 （3）LuaSql模块用于与MySQL数据库的通信
 （4）LuaHiredis模块用于与redis数据库的通信
+
+6.底层导出到Lua的函数在目录: lua/pfile 中可以查询到
+
+7.使用样例在bin目录下:
+（1）init.lua 是初始化服务器的代码文件
+（2）master.lua 是服务器用于和epoll通信的LuaState
+（3）branch.lua 是分支形式的LuaState，可以通过ScriptManager创建，详见master中的用法

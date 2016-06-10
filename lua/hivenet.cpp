@@ -1,6 +1,6 @@
 /*
 ** Lua binding: hivenet
-** Generated automatically by tolua++-1.0.92 on Fri Jun 10 12:51:23 2016.
+** Generated automatically by tolua++-1.0.92 on Fri Jun 10 13:07:24 2016.
 */
 
 #ifndef __cplusplus
@@ -22,10 +22,235 @@ TOLUA_API int  tolua_hivenet_open (lua_State* tolua_S);
 static void tolua_reg_types (lua_State* tolua_S)
 {
  tolua_usertype(tolua_S,"Epoll");
- tolua_usertype(tolua_S,"ScriptManager");
+ tolua_usertype(tolua_S,"Unique");
  tolua_usertype(tolua_S,"HandlerQueue");
+ tolua_usertype(tolua_S,"ScriptManager");
+ tolua_usertype(tolua_S,"HandlerInterface");
  tolua_usertype(tolua_S,"Script");
 }
+
+/* method: getIndex of class  Unique */
+#ifndef TOLUA_DISABLE_tolua_hivenet_Unique_getIndex00
+static int tolua_hivenet_Unique_getIndex00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"const Unique",0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  const Unique* self = (const Unique*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'getIndex'", NULL);
+#endif
+  {
+   unsigned int tolua_ret = ( unsigned int)  self->getIndex();
+   tolua_pushnumber(tolua_S,(lua_Number)tolua_ret);
+  }
+ }
+ return 1;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'getIndex'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: getVersion of class  Unique */
+#ifndef TOLUA_DISABLE_tolua_hivenet_Unique_getVersion00
+static int tolua_hivenet_Unique_getVersion00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"const Unique",0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  const Unique* self = (const Unique*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'getVersion'", NULL);
+#endif
+  {
+   unsigned short tolua_ret = ( unsigned short)  self->getVersion();
+   tolua_pushnumber(tolua_S,(lua_Number)tolua_ret);
+  }
+ }
+ return 1;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'getVersion'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: getHandle of class  Unique */
+#ifndef TOLUA_DISABLE_tolua_hivenet_Unique_getHandle00
+static int tolua_hivenet_Unique_getHandle00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"const Unique",0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  const Unique* self = (const Unique*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'getHandle'", NULL);
+#endif
+  {
+   long long tolua_ret = ( long long)  self->getHandle();
+   tolua_pushnumber(tolua_S,(lua_Number)tolua_ret);
+  }
+ }
+ return 1;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'getHandle'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: getType of class  Unique */
+#ifndef TOLUA_DISABLE_tolua_hivenet_Unique_getType00
+static int tolua_hivenet_Unique_getType00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"const Unique",0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  const Unique* self = (const Unique*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'getType'", NULL);
+#endif
+  {
+   unsigned char tolua_ret = ( unsigned char)  self->getType();
+   tolua_pushnumber(tolua_S,(lua_Number)tolua_ret);
+  }
+ }
+ return 1;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'getType'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: getClassName of class  Unique */
+#ifndef TOLUA_DISABLE_tolua_hivenet_Unique_getClassName00
+static int tolua_hivenet_Unique_getClassName00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"const Unique",0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  const Unique* self = (const Unique*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'getClassName'", NULL);
+#endif
+  {
+   std::string tolua_ret = (std::string)  self->getClassName();
+   tolua_pushcppstring(tolua_S,(const char*)tolua_ret);
+  }
+ }
+ return 1;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'getClassName'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: releaseTask of class  HandlerInterface */
+#ifndef TOLUA_DISABLE_tolua_hivenet_HandlerInterface_releaseTask00
+static int tolua_hivenet_HandlerInterface_releaseTask00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"HandlerInterface",0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  HandlerInterface* self = (HandlerInterface*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'releaseTask'", NULL);
+#endif
+  {
+   self->releaseTask();
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'releaseTask'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: getClassName of class  HandlerInterface */
+#ifndef TOLUA_DISABLE_tolua_hivenet_HandlerInterface_getClassName00
+static int tolua_hivenet_HandlerInterface_getClassName00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"const HandlerInterface",0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  const HandlerInterface* self = (const HandlerInterface*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'getClassName'", NULL);
+#endif
+  {
+   std::string tolua_ret = (std::string)  self->getClassName();
+   tolua_pushcppstring(tolua_S,(const char*)tolua_ret);
+  }
+ }
+ return 1;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'getClassName'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
 
 /* method: getInstance of class  HandlerQueue */
 #ifndef TOLUA_DISABLE_tolua_hivenet_HandlerQueue_getInstance00
@@ -165,7 +390,7 @@ static int tolua_hivenet_Epoll_setIdentify00(lua_State* tolua_S)
 #endif
  {
   Epoll* self = (Epoll*)  tolua_tousertype(tolua_S,1,0);
-  unique_long handle = ((unique_long)  tolua_tonumber(tolua_S,2,0));
+  long long handle = (( long long)  tolua_tonumber(tolua_S,2,0));
   bool identify = ((bool)  tolua_toboolean(tolua_S,3,0));
 #ifndef TOLUA_RELEASE
   if (!self) tolua_error(tolua_S,"invalid 'self' in function 'setIdentify'", NULL);
@@ -206,7 +431,7 @@ static int tolua_hivenet_Epoll_createClient00(lua_State* tolua_S)
   if (!self) tolua_error(tolua_S,"invalid 'self' in function 'createClient'", NULL);
 #endif
   {
-   unique_long tolua_ret = (unique_long)  self->createClient(ip,port);
+   long long tolua_ret = ( long long)  self->createClient(ip,port);
    tolua_pushnumber(tolua_S,(lua_Number)tolua_ret);
   }
  }
@@ -235,7 +460,7 @@ static int tolua_hivenet_Epoll_closeClient00(lua_State* tolua_S)
 #endif
  {
   Epoll* self = (Epoll*)  tolua_tousertype(tolua_S,1,0);
-  unique_long handle = ((unique_long)  tolua_tonumber(tolua_S,2,0));
+  long long handle = (( long long)  tolua_tonumber(tolua_S,2,0));
 #ifndef TOLUA_RELEASE
   if (!self) tolua_error(tolua_S,"invalid 'self' in function 'closeClient'", NULL);
 #endif
@@ -268,7 +493,7 @@ static int tolua_hivenet_Epoll_closeAccept00(lua_State* tolua_S)
 #endif
  {
   Epoll* self = (Epoll*)  tolua_tousertype(tolua_S,1,0);
-  unique_long handle = ((unique_long)  tolua_tonumber(tolua_S,2,0));
+  long long handle = (( long long)  tolua_tonumber(tolua_S,2,0));
 #ifndef TOLUA_RELEASE
   if (!self) tolua_error(tolua_S,"invalid 'self' in function 'closeAccept'", NULL);
 #endif
@@ -807,6 +1032,19 @@ TOLUA_API int tolua_hivenet_open (lua_State* tolua_S)
  tolua_reg_types(tolua_S);
  tolua_module(tolua_S,NULL,0);
  tolua_beginmodule(tolua_S,NULL);
+  tolua_cclass(tolua_S,"Unique","Unique","",NULL);
+  tolua_beginmodule(tolua_S,"Unique");
+   tolua_function(tolua_S,"getIndex",tolua_hivenet_Unique_getIndex00);
+   tolua_function(tolua_S,"getVersion",tolua_hivenet_Unique_getVersion00);
+   tolua_function(tolua_S,"getHandle",tolua_hivenet_Unique_getHandle00);
+   tolua_function(tolua_S,"getType",tolua_hivenet_Unique_getType00);
+   tolua_function(tolua_S,"getClassName",tolua_hivenet_Unique_getClassName00);
+  tolua_endmodule(tolua_S);
+  tolua_cclass(tolua_S,"HandlerInterface","HandlerInterface","Unique",NULL);
+  tolua_beginmodule(tolua_S,"HandlerInterface");
+   tolua_function(tolua_S,"releaseTask",tolua_hivenet_HandlerInterface_releaseTask00);
+   tolua_function(tolua_S,"getClassName",tolua_hivenet_HandlerInterface_getClassName00);
+  tolua_endmodule(tolua_S);
   tolua_cclass(tolua_S,"HandlerQueue","HandlerQueue","",NULL);
   tolua_beginmodule(tolua_S,"HandlerQueue");
    tolua_function(tolua_S,"getInstance",tolua_hivenet_HandlerQueue_getInstance00);
@@ -824,7 +1062,7 @@ TOLUA_API int tolua_hivenet_open (lua_State* tolua_S)
    tolua_function(tolua_S,"closeEpoll",tolua_hivenet_Epoll_closeEpoll00);
    tolua_function(tolua_S,"getClassName",tolua_hivenet_Epoll_getClassName00);
   tolua_endmodule(tolua_S);
-  tolua_cclass(tolua_S,"Script","Script","",NULL);
+  tolua_cclass(tolua_S,"Script","Script","HandlerInterface",NULL);
   tolua_beginmodule(tolua_S,"Script");
    tolua_function(tolua_S,"sendMessage",tolua_hivenet_Script_sendMessage00);
    tolua_function(tolua_S,"setInitString",tolua_hivenet_Script_setInitString00);

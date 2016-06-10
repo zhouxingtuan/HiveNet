@@ -1,0 +1,17 @@
+
+typedef long long		unique_long;
+typedef unsigned int	unique_int;
+typedef unsigned short	unique_short;
+typedef unsigned char	unique_char;
+
+class Unique
+{
+	virtual inline unique_int getIndex(void) const { return m_uniqueHandle.getIndex(); }
+	virtual inline unique_short getVersion(void) const { return m_uniqueHandle.getVersion(); }
+	virtual inline unique_long getHandle(void) const { return m_uniqueHandle.getHandle(); }
+	virtual inline unique_char getType(void) const { return m_uniqueHandle.getType(); }
+	virtual inline std::string getClassName(void) const {
+		return "Unique";
+	}
+};
+

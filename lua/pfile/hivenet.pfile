@@ -3,6 +3,10 @@ $#include "script.h"
 $#include "scriptmanager.h"
 $#include "manual.hpp"
 
+$pfile "common.pfile"
+
+$pfile "handlerinterface.pfile"
+
 $pfile "handlerqueue.pfile"
 
 $pfile "epoll.pfile"

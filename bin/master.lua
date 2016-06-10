@@ -62,6 +62,8 @@ function onAcceptIn(handle)
     print("onAcceptIn", tostring(handle))
     local ret = m_pScript:sendMessage(handle, "Hello From Server!")
     print("onAcceptIn sendMessage", ret)
+    local scriptObj = ScriptManager:getInstance():create("require('branch')")
+    print("scriptObj handle", scriptObj:getHandle(), scriptObj:getType(), scriptObj:getIndex(), scriptObj:getVersion())
 end
 
 function onAcceptOut(handle)

@@ -189,6 +189,9 @@ public:
 	virtual inline unique_short getVersion(void) const { return m_uniqueHandle.getVersion(); }
 	virtual inline unique_long getHandle(void) const { return m_uniqueHandle.getHandle(); }
 	virtual inline unique_char getType(void) const { return m_uniqueHandle.getType(); }
+	virtual inline std::string getClassName(void) const {
+		return "Unique";
+	}
 protected:
 	virtual inline UniqueHandle getUniqueHandle(void) const { return m_uniqueHandle; }
 	inline void increaseVersion(void){ m_uniqueHandle.increase(); }

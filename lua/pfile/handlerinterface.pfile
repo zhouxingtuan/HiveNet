@@ -1,0 +1,8 @@
+
+class HandlerInterface : public Unique
+{
+	virtual void releaseTask(void);		// 放弃掉所有任务
+    virtual inline std::string getClassName(void) const {
+        return "HandlerInterface";
+    }
+};// end class HandlerInterface
