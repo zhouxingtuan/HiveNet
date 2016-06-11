@@ -45,8 +45,8 @@ Script* ScriptManager::create(const char* initString){
 	if( NULL == pScript->getState() ){
 		pScript->setMaster(m_pMaster);
 		pScript->setState(NULL);
-		pScript->setInitString(initString);
 	}
+	pScript->setInitString(initString);
 	TaskInitialize* pTask = new TaskInitialize(pScript);
 	pTask->commitTask();
 	return pScript;
