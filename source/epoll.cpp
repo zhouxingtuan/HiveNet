@@ -195,9 +195,6 @@ bool Epoll::acceptSocket(void){
 bool Epoll::createEpoll(void){
     m_epollfd = epoll_create(MAX_LISTEN_SIZE);
     // 检查是否需要添加监听端口
-    if( m_socket.fd == 0 ){
-        return false;
-    }
     if( epollAdd(m_epollfd, m_socket.fd, this) < 0 ){
         close(m_epollfd);
         m_epollfd = 0;
