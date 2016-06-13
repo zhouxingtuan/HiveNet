@@ -6,33 +6,34 @@
 -- To change this template use File | Settings | File Templates.
 --
 
-print("-----------------")
 local r, jit = pcall(require, 'jit')
-if not r then
-    print("jit close", jit)
-else
-    print("jit open", jit.version, jit.version_num, jit.os, jit.arch)
-end
-print("-----------------")
 require("socket.init")
-print("-----------------")
 local luasql = require("luasql")
-for k,v in pairs(luasql) do
-    print(k, v)
-end
-print("-----------------")
 local hiredis = require("hiredis")
-for k,v in pairs(hiredis) do
-    print(k,v)
-end
-print("-----------------")
+
+--print("-----------------")
+--if not r then
+--    print("jit close", jit)
+--else
+--    print("jit open", jit.version, jit.version_num, jit.os, jit.arch)
+--end
+--print("-----------------")
+--print("-----------------")
+--for k,v in pairs(luasql) do
+--    print(k, v)
+--end
+--print("-----------------")
+--for k,v in pairs(hiredis) do
+--    print(k,v)
+--end
+--print("-----------------")
 
 local m_pScript
 function onInitialize(pScript)
     m_pScript = pScript
     print("onInitialize called cobj is", pScript:getClassName())
-    require("test_luahiredis")
-    require("test_luasql")
+--    require("test_luahiredis")
+--    require("test_luasql")
 end
 
 function onHandleMessage(handle, msg)
