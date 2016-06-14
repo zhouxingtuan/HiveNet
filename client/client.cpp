@@ -81,26 +81,73 @@ bool Client::receivePacket(Packet* pPacket){
 int Client::threadFunction(void){
 	assert(NULL != m_pInterface && "m_pInterface for Client can not be NULL");
 	if( !connectServer() ){
-		m_pInterface->notifyConnectServerFailed(this);	// 通知外部连接失败
+		addClientEvent(CLIENT_EVENT_CONN_FAILED, NULL);
 		return 0;
 	}
-	m_pInterface->notifyConnectServerSuccess(this);	// 通知外部连接成功
+	addClientEvent(CLIENT_EVENT_CONN_SUCCESS, NULL);
 	while(true){
 		if( !tryReadSocket() ){
 			removeSocket();
-			m_pInterface->notifyConnectOut(this);	// 通知外部连接退出
+			addClientEvent(CLIENT_EVENT_CONN_OUT, NULL);
 			return 0;
 		}
 		if( !tryWriteSocket() ){
 			removeSocket();
-			m_pInterface->notifyConnectOut(this);	// 通知外部连接退出
+			addClientEvent(CLIENT_EVENT_CONN_OUT, NULL);
 			return 0;
 		}
 	};
 	return 0;
 }
 void Client::dispatchPacket(Packet* pPacket){
-	m_pInterface->notifyPacketIn(this, pPacket);
+	addClientEvent(CLIENT_EVENT_PACKET_IN, pPacket);
+}
+void Client::dispatchEvent(void){
+	ClientEvent evt;
+	memset(&evt, 0, sizeof(ClientEvent));
+	lock();
+	if( !m_clientEventQueue.empty() ){
+		evt = m_clientEventQueue.front();
+		m_clientEventQueue.pop_front();
+	}
+	unlock();
+	switch(evt.event){
+		case CLIENT_EVENT_NONE: break;	// nothing happened
+		case CLIENT_EVENT_PACKET_IN:{
+			m_pInterface->notifyPacketIn(this, evt.pPacket);
+			break;
+		}
+		case CLIENT_EVENT_CONN_FAILED:{
+			m_pInterface->notifyConnectServerFailed(this);	// 通知外部连接失败
+			break;
+		}
+		case CLIENT_EVENT_CONN_SUCCESS:{
+			m_pInterface->notifyConnectServerSuccess(this);	// 通知外部连接成功
+			break;
+		}
+		case CLIENT_EVENT_CONN_OUT:{
+			m_pInterface->notifyConnectOut(this);	// 通知外部连接退出
+			break;
+		}
+		default:{
+			fprintf(stderr, "unknown event type for client\n");
+			break;
+		}
+	};
+	if( NULL != evt.pPacket ){
+		evt.pPacket->release();
+	}
+}
+void Client::addClientEvent(ClientEventType event, Packet* pPacket){
+	ClientEvent evt;
+	evt.event = event;
+	evt.pPacket = pPacket;
+	if( NULL != pPacket ){
+		pPacket->retain();
+	}
+	lock();
+	m_clientEventQueue.push_back(evt);
+	unlock();
 }
 bool Client::tryReadSocket(void){
 	fd_set	fdCheck;

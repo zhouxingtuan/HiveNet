@@ -47,6 +47,7 @@
 //socket & net libs
 #include <errno.h>
 #include <unistd.h>
+#include <netdb.h>
 #include <sys/types.h>		/* basic system data types */
 #include <sys/socket.h>		/* basic socket definitions */
 #include <netinet/in.h>		/* sockaddr_in{} and other Internet defns */
@@ -243,14 +244,30 @@ public:
 	virtual void notifyPacketIn(Client* pClient, Packet* pPacket) = 0;
 };// end class ClientInterface
 
+enum ClientEventType{
+	CLIENT_EVENT_NONE = 0,
+	CLIENT_EVENT_CONN_FAILED = 1,
+	CLIENT_EVENT_CONN_SUCCESS = 2,
+	CLIENT_EVENT_CONN_OUT = 3,
+	CLIENT_EVENT_PACKET_IN = 4,
+};
+
+typedef struct ClientEvent{
+	ClientEventType event;
+	Packet* pPacket;
+}ClientEvent;
+
 class Client : public RefObject, public Sync, public Thread
 {
 public:
 	typedef std::deque<Packet*> PacketQueue;
+	typedef std::deque<ClientEvent> ClientEventQueue;
 public:
 	Client(void);
 	virtual ~Client(void);
 	virtual int threadFunction(void);
+
+	virtual void dispatchEvent(void);	// 这个函数需要在主循环中调用，用来分发事件
 
 	virtual bool receivePacket(Packet* pPacket);
 	virtual void removeSocket(void);
@@ -271,11 +288,13 @@ protected:
 	virtual bool readSocket(void);
 	virtual bool writeSocket(Packet* pPacket);
 	virtual void closeSocket(void);
+	virtual void addClientEvent(ClientEventType event, Packet* pPacket);
 	void dispatchPacket(Packet* pPacket);
 	void releasePacket(void);
 protected:
 	SocketInformation m_socket;
 	PacketQueue m_packetQueue;
+	ClientEventQueue m_clientEventQueue;
 	Packet* m_tempReadPacket;
 	ClientInterface* m_pInterface;
 };//end class Client
