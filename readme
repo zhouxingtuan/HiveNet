@@ -4,7 +4,7 @@
 
 3.需要安装MySQL Client的客户端API，Linux下执行命令
 apt-cache search libmysql
-libmysqlclient-dev
+apt-get install libmysqlclient-dev
 
 4.编译脚本为compile,执行命令 bash compile 进行编译
 
