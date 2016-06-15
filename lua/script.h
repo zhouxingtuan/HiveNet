@@ -28,7 +28,7 @@ extern "C" {
 
 NS_HIVENET_BEGIN
 
-#define UNIQUE_HANDLER_SCRIPT 2
+#define UNIQUE_HANDLER_SCRIPT 3
 
 class Script : public HandlerInterface, public EpollTaskFactory
 {

@@ -23,8 +23,8 @@ struct SocketInformation{
     unsigned short port;
 };
 
-#define UNIQUE_HANDLER_ACCEPT 0
-#define UNIQUE_HANDLER_CLIENT 1
+#define UNIQUE_HANDLER_ACCEPT 1
+#define UNIQUE_HANDLER_CLIENT 2
 
 class Epoll;
 

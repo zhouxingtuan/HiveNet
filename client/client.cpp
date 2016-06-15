@@ -307,25 +307,60 @@ void Client::closeSocket(void){
     }
 }
 bool Client::connectServer(void){
-    int fd;
-    struct sockaddr_in servaddr;
-    socklen_t socklen = sizeof(struct sockaddr_in);
-    bzero(&servaddr, socklen);
-    servaddr.sin_family = AF_INET;
-    servaddr.sin_addr.s_addr = inet_addr( m_socket.ip );//htonl(INADDR_ANY);
-    servaddr.sin_port = htons( m_socket.port );
-
-    fd = socket(AF_INET, SOCK_STREAM, 0);
-    if(fd == -1){
-        return false;
-    }
-    if( connect(fd, (struct sockaddr *)&servaddr, socklen) == -1 ){
-        close( fd );
-        return false;
-    }
-    m_socket.fd = fd;
-    return true;
+	struct addrinfo hints;
+	struct addrinfo *res = NULL;
+	struct addrinfo *ptr = NULL;
+	int fd = -1;
+	int result;
+	char port_str[8];
+	sprintf(port_str, "%d", m_socket.port);
+	memset(&hints, 0, sizeof(struct addrinfo));
+	hints.ai_family = AF_UNSPEC;
+	hints.ai_protocol = IPPROTO_TCP;
+	hints.ai_socktype = SOCK_STREAM;
+	result = getaddrinfo(m_socket.ip, port_str, &hints, &res);
+	if( result ){
+		return false;
+	}
+	for(ptr = res; ptr != NULL; ptr = ptr->ai_next){
+		fd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+		if( fd < 0 ){
+			continue;
+		}
+		if( connect(fd, res->ai_addr, res->ai_addrlen) < 0 ){
+			close(fd);
+			fd = -1;
+			continue;
+		}
+		break;	// we got one conn
+	}
+	if( fd < 0 ){
+		return false;
+	}
+	freeaddrinfo(res);	// 记得释放
+	m_socket.fd = fd;
+	return true;
 }
+//bool Client::connectServer(void){
+//    int fd;
+//    struct sockaddr_in servaddr;
+//    socklen_t socklen = sizeof(struct sockaddr_in);
+//    bzero(&servaddr, socklen);
+//    servaddr.sin_family = AF_INET;
+//    servaddr.sin_addr.s_addr = inet_addr( m_socket.ip );//htonl(INADDR_ANY);
+//    servaddr.sin_port = htons( m_socket.port );
+//
+//    fd = socket(AF_INET, SOCK_STREAM, 0);
+//    if(fd == -1){
+//        return false;
+//    }
+//    if( connect(fd, (struct sockaddr *)&servaddr, socklen) == -1 ){
+//        close( fd );
+//        return false;
+//    }
+//    m_socket.fd = fd;
+//    return true;
+//}
 /*--------------------------------------------------------------------*/
 
 NS_HIVENET_END

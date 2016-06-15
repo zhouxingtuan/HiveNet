@@ -30,6 +30,31 @@ public:
 	}
 };
 
+//void splitString(const std::string& ip, const std::string& sep,
+//	unsigned char ipv4[] , unsigned int size){
+//	std::string::size_type pos_begin = ip.find_first_not_of(sep);
+//	std::string::size_type comma_pos = 0;
+//	std::string tmp;
+//	unsigned int s = 0;
+//	unsigned char tmp_n;
+//	while(pos_begin != std::string::npos && s < size){
+//		comma_pos = ip.find(sep, pos_begin);
+//		if( comma_pos !=  std::string::npos ){
+//			tmp = ip.substr(pos_begin, comma_pos - pos_begin);
+//			pos_begin = comma_pos + sep.length();
+//
+//		}else{
+//			tmp = ip.substr(pos_begin);
+//			pos_begin = comma_pos;
+//		}
+//		if( !tmp.empty() ){
+//			tmp_n = atoi(tmp.c_str());
+//			ipv4[s] = tmp_n;
+//			++s;
+//		}
+//	};
+//}
+
 int main(int argc, char *argv[])
 {
 	fprintf(stderr, "hello world!\n");
@@ -37,49 +62,6 @@ int main(int argc, char *argv[])
 	ClientNotify* pNotify = new ClientNotify();
 	Client* pClient = new Client();
 	pClient->retain();
-
-	char ipstringbuffer[46];
-	struct sockaddr_in  *sockaddr_ipv4;
-    struct sockaddr_in6 *sockaddr_ipv6;
-	struct addrinfo hints;
-	struct addrinfo *res = NULL;
-	struct addrinfo *ptr = NULL;
-	int result;
-	int i = 1;
-	memset(&hints, 0, sizeof(struct addrinfo));
-	hints.ai_family = AF_UNSPEC;
-//	hints.ai_flags = AI_DEFAULT;
-	hints.ai_protocol = IPPROTO_TCP;
-	hints.ai_socktype = SOCK_STREAM;
-	result = getaddrinfo("cocospider.com", NULL, &hints, &res);
-	if(result == -1){
-		fprintf(stderr, "getaddrinfo result error\n");
-		goto MAIN_EXIT;
-	}
-	for(ptr = res; ptr != NULL; ptr = ptr->ai_next){
-		fprintf(stderr, "getaddrinfo response %d\n", i++);
-		fprintf(stderr, "\tFlags: 0x%x\n", ptr->ai_flags);
-		fprintf(stderr, "\tFamily: ");
-		switch(ptr->ai_family){
-			case AF_UNSPEC:
-				fprintf(stderr, "Unspecified\n");
-				break;
-			case AF_INET:
-				fprintf(stderr, "AF_INET (IPv4)\n");
-				sockaddr_ipv4 = (struct sockaddr_in *) ptr->ai_addr;
-				fprintf(stderr, "\tIPv4 address %s\n", inet_ntoa(sockaddr_ipv4->sin_addr) );
-				break;
-			case AF_INET6:
-				fprintf(stderr, "AF_INET6 (IPv6)\n");
-				sockaddr_ipv6 = (struct sockaddr_in6 *) ptr->ai_addr;
-				fprintf(stderr, "\tIPv6 address %s\n", inet_ntop(AF_INET6, &sockaddr_ipv6->sin6_addr, ipstringbuffer, 46) );
-				break;
-			default:
-				fprintf(stderr, "Other %ld\n", ptr->ai_family);
-				break;
-		};
-	}
-	freeaddrinfo(res);	// 记得释放
 
 	pClient->setNotifyInterface(pNotify);
 	pClient->setSocket("127.0.0.1", 8888);
@@ -92,7 +74,7 @@ int main(int argc, char *argv[])
 	};
 
 	sleep(5);
-MAIN_EXIT:
+	
 	pClient->release();
 	delete pNotify;
 	return 0;
