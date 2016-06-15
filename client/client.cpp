@@ -320,6 +320,7 @@ bool Client::connectServer(void){
 	hints.ai_socktype = SOCK_STREAM;
 	result = getaddrinfo(m_socket.ip, port_str, &hints, &res);
 	if( result ){
+		freeaddrinfo(res);	// 记得释放
 		return false;
 	}
 	for(ptr = res; ptr != NULL; ptr = ptr->ai_next){
@@ -334,10 +335,10 @@ bool Client::connectServer(void){
 		}
 		break;	// we got one conn
 	}
+	freeaddrinfo(res);	// 记得释放
 	if( fd < 0 ){
 		return false;
 	}
-	freeaddrinfo(res);	// 记得释放
 	m_socket.fd = fd;
 	return true;
 }

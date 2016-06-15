@@ -30,31 +30,6 @@ public:
 	}
 };
 
-//void splitString(const std::string& ip, const std::string& sep,
-//	unsigned char ipv4[] , unsigned int size){
-//	std::string::size_type pos_begin = ip.find_first_not_of(sep);
-//	std::string::size_type comma_pos = 0;
-//	std::string tmp;
-//	unsigned int s = 0;
-//	unsigned char tmp_n;
-//	while(pos_begin != std::string::npos && s < size){
-//		comma_pos = ip.find(sep, pos_begin);
-//		if( comma_pos !=  std::string::npos ){
-//			tmp = ip.substr(pos_begin, comma_pos - pos_begin);
-//			pos_begin = comma_pos + sep.length();
-//
-//		}else{
-//			tmp = ip.substr(pos_begin);
-//			pos_begin = comma_pos;
-//		}
-//		if( !tmp.empty() ){
-//			tmp_n = atoi(tmp.c_str());
-//			ipv4[s] = tmp_n;
-//			++s;
-//		}
-//	};
-//}
-
 int main(int argc, char *argv[])
 {
 	fprintf(stderr, "hello world!\n");
@@ -74,7 +49,7 @@ int main(int argc, char *argv[])
 	};
 
 	sleep(5);
-	
+
 	pClient->release();
 	delete pNotify;
 	return 0;
