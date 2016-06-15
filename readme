@@ -24,6 +24,6 @@ apt-get install libmysqlclient-dev
 （3）branch.lua 是分支形式的LuaState，可以通过ScriptManager创建，详见master中的用法
 
 9.client目录下：
-  client.h和client.cpp文件用于前端连接服务器。具体使用方法详见main.cpp文件
+  client.h和client.cpp文件用于前端连接服务器。具体使用方法详见client/main.cpp文件
 
 
