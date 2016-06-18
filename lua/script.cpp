@@ -11,7 +11,7 @@
 
 NS_HIVENET_BEGIN
 
-Script::Script(unique_char uniqueType) : HandlerInterface(uniqueType), m_pState(NULL), m_pMaster(NULL){
+Script::Script(unique_char uniqueType) : HandlerInterface(uniqueType), EpollTaskFactory(), m_pState(NULL), m_pMaster(NULL){
 
 }
 Script::~Script(void){
