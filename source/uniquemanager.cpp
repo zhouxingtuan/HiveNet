@@ -120,9 +120,9 @@ void UniqueManager::remove(unique_long handle){
     lock();
     if( index < (unique_int)m_uniqueObjects.size() ){
 		pUnique = m_uniqueObjects[index];
-		m_uniqueObjects[index] = NULL;
 		if( NULL != pUnique ){
 			if(handle == pUnique->getHandle()){
+				m_uniqueObjects[index] = NULL;
 				IntVector& idles = m_idleIndex[pUnique->getType()];
 				idles.push_back(index);
 			}else{
