@@ -31,7 +31,7 @@ public:
 };// end class EpollTaskFactory
 /*--------------------------------------------------------------------*/
 
-#define MAX_LISTEN_SIZE 11008
+#define MAX_LISTEN_SIZE 1024
 #define MAX_EPOLL_EVENT 64
 #define EPOLL_WAIT_FLAG -1
 
