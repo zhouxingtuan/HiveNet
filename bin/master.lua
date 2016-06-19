@@ -65,6 +65,8 @@ function onAcceptIn(handle)
     print("onAcceptIn sendMessage", ret)
     local scriptObj = ScriptManager:getInstance():create("require('branch')")
     print("scriptObj handle", scriptObj:getHandle(), scriptObj:getType(), scriptObj:getIndex(), scriptObj:getVersion())
+    -- 连接需要设置为已验证，才能够打开底层接收大量数据的开关，未验证只能发送64字节，已验证可以接收最大64M可以自己去更改并编译
+    Epoll:getInstance():setIdentify(handle, true)
 end
 
 function onAcceptOut(handle)

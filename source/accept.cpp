@@ -84,6 +84,7 @@ void Accept::removeSocket(void){
 void Accept::resetData(void){
 	closeSocket();	// 关闭套接字
 	SAFE_RELEASE(m_tempReadPacket)
+	m_isIdentify = false;
 	releasePacket();	// 取消所有数据包的发送
 }
 void Accept::dispatchPacket(Packet* pPacket){
