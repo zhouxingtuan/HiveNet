@@ -295,6 +295,7 @@ protected:
 	SocketInformation m_socket;
 	PacketQueue m_packetQueue;
 	ClientEventQueue m_clientEventQueue;
+	ClientEventQueue m_tempEventQueue;
 	Packet* m_tempReadPacket;
 	ClientInterface* m_pInterface;
 };//end class Client

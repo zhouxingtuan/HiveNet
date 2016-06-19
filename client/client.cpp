@@ -103,40 +103,44 @@ void Client::dispatchPacket(Packet* pPacket){
 	addClientEvent(CLIENT_EVENT_PACKET_IN, pPacket);
 }
 void Client::dispatchEvent(void){
+	// 一次性处理完所有的消息
+	m_tempEventQueue.clear();
+	lock();
+	m_tempEventQueue.swap(m_clientEventQueue);
+	unlock();
 	ClientEvent evt;
 	memset(&evt, 0, sizeof(ClientEvent));
-	lock();
-	if( !m_clientEventQueue.empty() ){
-		evt = m_clientEventQueue.front();
-		m_clientEventQueue.pop_front();
-	}
-	unlock();
-	switch(evt.event){
-		case CLIENT_EVENT_NONE: break;	// nothing happened
-		case CLIENT_EVENT_PACKET_IN:{
-			m_pInterface->notifyPacketIn(this, evt.pPacket);
-			break;
-		}
-		case CLIENT_EVENT_CONN_FAILED:{
-			m_pInterface->notifyConnectServerFailed(this);	// 通知外部连接失败
-			break;
-		}
-		case CLIENT_EVENT_CONN_SUCCESS:{
-			m_pInterface->notifyConnectServerSuccess(this);	// 通知外部连接成功
-			break;
-		}
-		case CLIENT_EVENT_CONN_OUT:{
-			m_pInterface->notifyConnectOut(this);	// 通知外部连接退出
-			break;
-		}
-		default:{
-			fprintf(stderr, "unknown event type for client\n");
-			break;
-		}
+	while(!m_tempEventQueue.empty()){
+		evt = m_tempEventQueue.front();
+		m_tempEventQueue.pop_front();
+		switch(evt.event){
+    		case CLIENT_EVENT_NONE: break;	// nothing happened
+    		case CLIENT_EVENT_PACKET_IN:{
+    			m_pInterface->notifyPacketIn(this, evt.pPacket);
+    			break;
+    		}
+    		case CLIENT_EVENT_CONN_FAILED:{
+    			m_pInterface->notifyConnectServerFailed(this);	// 通知外部连接失败
+    			break;
+    		}
+    		case CLIENT_EVENT_CONN_SUCCESS:{
+    			m_pInterface->notifyConnectServerSuccess(this);	// 通知外部连接成功
+    			break;
+    		}
+    		case CLIENT_EVENT_CONN_OUT:{
+    			m_pInterface->notifyConnectOut(this);	// 通知外部连接退出
+    			break;
+    		}
+    		default:{
+    			fprintf(stderr, "unknown event type for client\n");
+    			break;
+    		}
+    	};
+    	if( NULL != evt.pPacket ){
+    		evt.pPacket->release();
+    	}
 	};
-	if( NULL != evt.pPacket ){
-		evt.pPacket->release();
-	}
+
 }
 void Client::addClientEvent(ClientEventType event, Packet* pPacket){
 	ClientEvent evt;
