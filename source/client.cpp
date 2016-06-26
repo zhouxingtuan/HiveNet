@@ -26,12 +26,11 @@ void* Client::syncConnectServer(void* pData){
 }
 bool Client::tryConnectServer(void){
 	if( connectServer() ){
-		if( !m_pEpoll->receiveClient(this) ){
-			removeSocket();
-			return false;
+		if( m_pEpoll->receiveClient(this) ){
+			return true;
 		}
-		return true;
 	}
+	removeSocket();
 	return false;
 }
 bool Client::connectServer(void){
