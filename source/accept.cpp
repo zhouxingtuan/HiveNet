@@ -17,6 +17,7 @@ Accept::Accept(unique_char uniqueType) : Unique(uniqueType), Sync(), m_pEpoll(NU
 	clearStateOutFlag();
 }
 Accept::~Accept(void){
+	closeSocket();	// 关闭套接字
 	releasePacket();
 	SAFE_RELEASE(m_tempReadPacket)
 }
