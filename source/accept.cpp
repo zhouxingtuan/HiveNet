@@ -62,7 +62,6 @@ bool Accept::tryWriteSocket(void){
 		return false;
 	}
 	if( pPacket->isCursorEnd() ){
-		pPacket->release();		// 释放 1
 		// 反向检查队列并移除队末尾的对象
 		bool releasePacketAtEnd = false;
 		this->lock();
@@ -74,6 +73,7 @@ bool Accept::tryWriteSocket(void){
 		if(releasePacketAtEnd){
 			pPacket->release();	// 对应进入队列时的retain
 		}
+		pPacket->release();		// 释放 1
 		return true;
 	}
 	return true;
