@@ -37,7 +37,6 @@ void HandlerInterface::doHandler(void){
 	this->unlock();
 	if( NULL != pTask ){
 		doTaskFinished = pTask->doTask(); 	// 执行任务，因为已经保证handler被worker独占，所以可以不在临界区内
-		pTask->release();					// 这次释放对应的是前面获取时保留的引用(1)
 	}
 	this->lock();
 	// 任务有可能在一次执行中未结束，需要重新执行，检查doTaskFinished
@@ -54,8 +53,11 @@ void HandlerInterface::doHandler(void){
 		this->unlock();
 		HandlerQueue::getInstance()->acceptHandler(this);	// 重新将handler提交给队列
 	}
-	if( releaseTaskAtEnd ){
-		pTask->release();					// 执行结束才可以释放，对应的是进入队列时的retain
+	if( NULL != pTask ){
+		if( releaseTaskAtEnd ){
+			pTask->release();				// 执行结束才可以释放，对应的是进入队列时的retain
+		}
+		pTask->release();					// 这次释放对应的是前面获取时保留的引用(1)
 	}
 }
 void HandlerInterface::acceptTask(TaskInterface* pTask){
