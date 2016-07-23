@@ -1,6 +1,6 @@
 /*
 ** Lua binding: hivenet
-** Generated automatically by tolua++-1.0.92 on Sun Jun 19 23:46:02 2016.
+** Generated automatically by tolua++-1.0.92 on Sun Jun 26 15:30:14 2016.
 */
 
 #ifndef __cplusplus
