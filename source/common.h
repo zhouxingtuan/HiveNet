@@ -154,10 +154,11 @@ typedef unsigned char	unique_char;
 typedef struct UniqueHandle{
 	union{
 		struct{
-			unique_int		index;
-			unique_short	version;
-			unique_char		type;
-			unique_char		reserve;
+			unique_int	index;
+			unique_char	version;
+			unique_char	type;
+			unique_char	reserve1;
+			unique_char	reserve2;
 		}unique;
 		unique_long handle;
 	};
