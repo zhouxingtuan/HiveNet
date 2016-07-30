@@ -20,6 +20,12 @@ public:
     explicit Packet(Buffer* pBuffer);
     virtual ~Packet(void);
 
+	static Packet* createPacket(int length){
+		Packet* pPacket = new Packet(length);
+		pPacket->setCursor(4);
+		return pPacket;
+	}
+
 	inline void setCursor(int cur){ m_cursor = cur; }
 	inline void moveCursor(int length){ m_cursor += length; }
 	inline int getCursor(void) const { return m_cursor; }
@@ -41,6 +47,14 @@ public:
 			moveCursor(n);
 		}
 		return n;
+	}
+	inline char readByte(void){
+		char c = 0;
+		read(&c, 1);
+		return c;
+	}
+	inline void writeByte(char c){
+		write(&c, 1);
 	}
 	virtual inline std::string getClassName(void) const {
 		return "Packet";

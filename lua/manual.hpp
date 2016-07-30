@@ -61,3 +61,33 @@ static int tolua_hivenet_Script_sendMessage00(lua_State* tolua_S)
 #endif
 }
 
+
+/* method: read of class  Packet */
+#define TOLUA_DISABLE_tolua_hivenet_Packet_read00
+static int tolua_hivenet_Packet_read00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Packet",0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Packet* self = (Packet*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'read'", NULL);
+#endif
+  {
+   lua_pushlstring(tolua_S,self->getCursorPtr(),self->getLength()-self->getCursor());
+  }
+ }
+ return 1;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'read'.",&tolua_err);
+ return 0;
+#endif
+}

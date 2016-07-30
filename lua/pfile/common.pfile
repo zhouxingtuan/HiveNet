@@ -15,3 +15,24 @@ class Unique
 	}
 };
 
+class Packet
+{
+	static Packet* createPacket(int length);
+	void retain(void);
+	void release(void);
+	inline void setCursor(int cur){ m_cursor = cur; }
+	inline int write(const char* ptr, int length);
+	inline int read(void* ptr, int length);
+	inline char readByte(void){
+		char c = 0;
+		read(&c, 1);
+		return c;
+	}
+	inline void writeByte(char c){
+		write(&c, 1);
+	}
+	virtual inline std::string getClassName(void) const {
+		return "Packet";
+	}
+};// end class Packet
+

@@ -1,6 +1,6 @@
 /*
 ** Lua binding: hivenet
-** Generated automatically by tolua++-1.0.92 on Sun Jun 26 15:30:14 2016.
+** Generated automatically by tolua++-1.0.92 on Sat Jul 30 08:18:50 2016.
 */
 
 #ifndef __cplusplus
@@ -24,6 +24,7 @@ static void tolua_reg_types (lua_State* tolua_S)
  tolua_usertype(tolua_S,"Epoll");
  tolua_usertype(tolua_S,"Unique");
  tolua_usertype(tolua_S,"HandlerQueue");
+ tolua_usertype(tolua_S,"Packet");
  tolua_usertype(tolua_S,"ScriptManager");
  tolua_usertype(tolua_S,"HandlerInterface");
  tolua_usertype(tolua_S,"Script");
@@ -172,6 +173,300 @@ static int tolua_hivenet_Unique_getClassName00(lua_State* tolua_S)
 #endif
  {
   const Unique* self = (const Unique*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'getClassName'", NULL);
+#endif
+  {
+   std::string tolua_ret = (std::string)  self->getClassName();
+   tolua_pushcppstring(tolua_S,(const char*)tolua_ret);
+  }
+ }
+ return 1;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'getClassName'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: createPacket of class  Packet */
+#ifndef TOLUA_DISABLE_tolua_hivenet_Packet_createPacket00
+static int tolua_hivenet_Packet_createPacket00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertable(tolua_S,1,"Packet",0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,2,0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,3,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  int length = ((int)  tolua_tonumber(tolua_S,2,0));
+  {
+   Packet* tolua_ret = (Packet*)  Packet::createPacket(length);
+    tolua_pushusertype(tolua_S,(void*)tolua_ret,"Packet");
+  }
+ }
+ return 1;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'createPacket'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: retain of class  Packet */
+#ifndef TOLUA_DISABLE_tolua_hivenet_Packet_retain00
+static int tolua_hivenet_Packet_retain00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Packet",0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Packet* self = (Packet*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'retain'", NULL);
+#endif
+  {
+   self->retain();
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'retain'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: release of class  Packet */
+#ifndef TOLUA_DISABLE_tolua_hivenet_Packet_release00
+static int tolua_hivenet_Packet_release00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Packet",0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Packet* self = (Packet*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'release'", NULL);
+#endif
+  {
+   self->release();
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'release'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: setCursor of class  Packet */
+#ifndef TOLUA_DISABLE_tolua_hivenet_Packet_setCursor00
+static int tolua_hivenet_Packet_setCursor00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Packet",0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,2,0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,3,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Packet* self = (Packet*)  tolua_tousertype(tolua_S,1,0);
+  int cur = ((int)  tolua_tonumber(tolua_S,2,0));
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'setCursor'", NULL);
+#endif
+  {
+   self->setCursor(cur);
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'setCursor'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: write of class  Packet */
+#ifndef TOLUA_DISABLE_tolua_hivenet_Packet_write00
+static int tolua_hivenet_Packet_write00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Packet",0,&tolua_err) ||
+     !tolua_isstring(tolua_S,2,0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,3,0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,4,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Packet* self = (Packet*)  tolua_tousertype(tolua_S,1,0);
+  const char* ptr = ((const char*)  tolua_tostring(tolua_S,2,0));
+  int length = ((int)  tolua_tonumber(tolua_S,3,0));
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'write'", NULL);
+#endif
+  {
+   int tolua_ret = (int)  self->write(ptr,length);
+   tolua_pushnumber(tolua_S,(lua_Number)tolua_ret);
+  }
+ }
+ return 1;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'write'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: read of class  Packet */
+#ifndef TOLUA_DISABLE_tolua_hivenet_Packet_read00
+static int tolua_hivenet_Packet_read00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Packet",0,&tolua_err) ||
+     !tolua_isuserdata(tolua_S,2,0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,3,0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,4,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Packet* self = (Packet*)  tolua_tousertype(tolua_S,1,0);
+  void* ptr = ((void*)  tolua_touserdata(tolua_S,2,0));
+  int length = ((int)  tolua_tonumber(tolua_S,3,0));
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'read'", NULL);
+#endif
+  {
+   int tolua_ret = (int)  self->read(ptr,length);
+   tolua_pushnumber(tolua_S,(lua_Number)tolua_ret);
+  }
+ }
+ return 1;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'read'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: readByte of class  Packet */
+#ifndef TOLUA_DISABLE_tolua_hivenet_Packet_readByte00
+static int tolua_hivenet_Packet_readByte00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Packet",0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Packet* self = (Packet*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'readByte'", NULL);
+#endif
+  {
+   char tolua_ret = (char)  self->readByte();
+   tolua_pushnumber(tolua_S,(lua_Number)tolua_ret);
+  }
+ }
+ return 1;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'readByte'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: writeByte of class  Packet */
+#ifndef TOLUA_DISABLE_tolua_hivenet_Packet_writeByte00
+static int tolua_hivenet_Packet_writeByte00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Packet",0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,2,0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,3,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Packet* self = (Packet*)  tolua_tousertype(tolua_S,1,0);
+  char c = ((char)  tolua_tonumber(tolua_S,2,0));
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'writeByte'", NULL);
+#endif
+  {
+   self->writeByte(c);
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'writeByte'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: getClassName of class  Packet */
+#ifndef TOLUA_DISABLE_tolua_hivenet_Packet_getClassName00
+static int tolua_hivenet_Packet_getClassName00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"const Packet",0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  const Packet* self = (const Packet*)  tolua_tousertype(tolua_S,1,0);
 #ifndef TOLUA_RELEASE
   if (!self) tolua_error(tolua_S,"invalid 'self' in function 'getClassName'", NULL);
 #endif
@@ -1039,6 +1334,18 @@ TOLUA_API int tolua_hivenet_open (lua_State* tolua_S)
    tolua_function(tolua_S,"getHandle",tolua_hivenet_Unique_getHandle00);
    tolua_function(tolua_S,"getType",tolua_hivenet_Unique_getType00);
    tolua_function(tolua_S,"getClassName",tolua_hivenet_Unique_getClassName00);
+  tolua_endmodule(tolua_S);
+  tolua_cclass(tolua_S,"Packet","Packet","",NULL);
+  tolua_beginmodule(tolua_S,"Packet");
+   tolua_function(tolua_S,"createPacket",tolua_hivenet_Packet_createPacket00);
+   tolua_function(tolua_S,"retain",tolua_hivenet_Packet_retain00);
+   tolua_function(tolua_S,"release",tolua_hivenet_Packet_release00);
+   tolua_function(tolua_S,"setCursor",tolua_hivenet_Packet_setCursor00);
+   tolua_function(tolua_S,"write",tolua_hivenet_Packet_write00);
+   tolua_function(tolua_S,"read",tolua_hivenet_Packet_read00);
+   tolua_function(tolua_S,"readByte",tolua_hivenet_Packet_readByte00);
+   tolua_function(tolua_S,"writeByte",tolua_hivenet_Packet_writeByte00);
+   tolua_function(tolua_S,"getClassName",tolua_hivenet_Packet_getClassName00);
   tolua_endmodule(tolua_S);
   tolua_cclass(tolua_S,"HandlerInterface","HandlerInterface","Unique",NULL);
   tolua_beginmodule(tolua_S,"HandlerInterface");

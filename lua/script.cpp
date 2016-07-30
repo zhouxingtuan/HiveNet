@@ -63,6 +63,10 @@ bool Script::onHandleMessage(unique_long handle, Packet* pPacket){
 //	static char namePacket[]="Packet";
 	pPacket->setCursor(PACKET_HEAD_LENGTH);
 	callGlobalFunction(onHandleMessage, handle, pPacket->getCursorPtr(), pPacket->getLength()-PACKET_HEAD_LENGTH);
+	pPacket->getBuffer()->resize(PACKET_HEAD_LENGTH);
+	pPacket->setCursor(PACKET_HEAD_LENGTH);
+	callGlobalFunction("onTestMessage", pPacket, "Packet");
+
 	return true;
 }
 bool Script::onUpdate(void){

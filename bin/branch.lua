@@ -38,6 +38,10 @@ function onHandleMessage(handle, msg)
     print("onHandleMessage called handle", handle, "msg is", msg)
 end
 
+function onTestMessage(packet)
+
+end
+
 function onUpdate()
 
 end
