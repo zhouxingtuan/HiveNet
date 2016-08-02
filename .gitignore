@@ -6,6 +6,7 @@
 #显示指定忽略名称为main的文件
 .DS_Store
 .idea/
+.vscode/
 
 #
 *.so
