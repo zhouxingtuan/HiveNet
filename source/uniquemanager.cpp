@@ -152,18 +152,22 @@ void UniqueManager::removeByType(unique_char uniqueType){
 	}
 }
 void UniqueManager::loop(unique_char uniqueType, LoopFunction loopFunc){
-	UniqueVector vecObj;
+	Unique* pUnique;
+	unsigned int size;
 	lock();
-	for( auto pUnique : m_uniqueObjects ){
-		if( NULL != pUnique && pUnique->getType() == uniqueType ){
-			pUnique->retain();
-			vecObj.push_back(pUnique);
-		}
-	}
+	size = m_uniqueObjects.size();
 	unlock();
-	for( auto pUnique : vecObj ){
-		loopFunc(pUnique);
-		pUnique->release();
+	for(unsigned int i=0; i<size; ++i){
+		lock();
+		pUnique = m_uniqueObjects[i];
+		SAFE_RETAIN(pUnique);
+		unlock();
+		if( NULL != pUnique ){
+			if(pUnique->getType() == uniqueType){
+				loopFunc(pUnique);
+			}
+			pUnique->release();
+		}
 	}
 }
 
