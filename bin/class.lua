@@ -18,7 +18,7 @@ local getmetatable = getmetatable
 -- class define
 -----------------------------------------------------------------------------
 -- 记录创建过的类；下面的操作避免重复加载的时候也可以不清掉以前的数据
-local classes = {}
+local classes = _G.classes or {}
 _G.classes = classes
 
 local function clone(object)

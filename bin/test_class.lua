@@ -29,8 +29,15 @@ end
 print(pcall(test_global_new))
 print(pcall(test_global_index))
 
-print("=====params of _G begin========")
-for k,v in pairs(_G) do
-	print(k, v)
+print("before reload class", class, "classes", classes)
+local test_reload_class = function()
+    print("test_reload_class called")
+    package.loaded["class"] = nil
+    require("class")
 end
-print("=====params of _G end==========")
+print(pcall(test_reload_class))
+print("after reload class", class, "classes", classes)
+
+local p2 = Player.new("Tom", "Ni hao!")
+p2:say()
+
