@@ -1,7 +1,7 @@
 
 require("class")
 
-local Player = class("Player")
+class("Player")
 
 function Player:ctor(name, word)
 	print("ctor called param", name, word)
@@ -29,14 +29,14 @@ end
 print(pcall(test_global_new))
 print(pcall(test_global_index))
 
-print("before reload class", class, "classes", classes)
+print("before reload class", class, "classes", classes, "Player", Player)
 local test_reload_class = function()
     print("test_reload_class called")
     package.loaded["class"] = nil
     require("class")
 end
 print(pcall(test_reload_class))
-print("after reload class", class, "classes", classes)
+print("after reload class", class, "classes", classes, "Player", Player)
 
 local p2 = Player.new("Tom", "Ni hao!")
 p2:say()
